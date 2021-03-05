@@ -5,28 +5,142 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "PowerShell: ./bin/New-LernaWorkspace",
-            "type": "PowerShell",
+            "name": "vagrant:init --status --instance 1 --group \"Test\" --provider \"virtualbox\"",
+            "program": "${workspaceFolder}/bin/frenchex2",
             "request": "launch",
-            "script": "./bin/New-LernaWorkspace.ps1",
-            "cwd": "${workspaceFolder}",
-            "args": ["-Name", "test", "-DestroyBefore", "-Force"]
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "cwd": "${workspaceFolder}/tmp",
+            "type": "pwa-node",
+            "args": [
+                "vagrant:init",
+                "--status",
+                "--instance",
+                "1",
+                "--group",
+                "Test",
+                "--provider",
+                "virtualbox"
+            ]
         },
         {
-            "name": "PowerShell: ./bin/New-NpmProject",
-            "type": "PowerShell",
+            "name": "vagrant:type:add 1",
+            "program": "${workspaceFolder}/bin/frenchex2",
             "request": "launch",
-            "script": "./bin/New-NpmProject.ps1",
-            "cwd": "${workspaceFolder}",
-            "args": ["-Name", "test", "-DestroyBefore", "-Force"]
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "cwd": "${workspaceFolder}/tmp",
+            "type": "pwa-node",
+            "args": [
+                "vagrant:type:add",
+                "--name",
+                "'test'",
+                "--vcpus",
+                "4",
+                "--cpucap",
+                "100",
+                "--os_type",
+                "Debian_64",
+                "--os_version",
+                "10.8.0",
+                "--ram_mb",
+                "2048",
+                "--vram_mb",
+                "8",
+                "--no-3d",
+                "--pagefusion",
+                "--no-gui",
+                "--provider",
+                "virtualbox",
+                "--enabled",
+                "--box",
+                "debian/contrib-buster64"
+            ]
         },
         {
-            "name": "PowerShell: ./bin/New-NpmProduct",
-            "type": "PowerShell",
+            "name": "vagrant:type:provision:add 1",
+            "program": "${workspaceFolder}/bin/frenchex2",
             "request": "launch",
-            "script": "./bin/New-NpmProduct.ps1",
-            "cwd": "${workspaceFolder}",
-            "args": ["-Name", "test", "-Scope", "'@frenchex2'", "-DestroyBefore", "-Force"]
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "cwd": "${workspaceFolder}/tmp",
+            "type": "pwa-node",
+            "args": [
+                "vagrant:type:provision:add",
+                "--name",
+                "'test'",
+                "--type",
+                "'test'",
+                "--env",
+                "'TEST_VAR1=testvalue1'",
+                "--env",
+                "'TEST_VAR2=testvalue2'",
+            ]
+        },
+        {
+            "name": "vagrant:machine:add 1",
+            "program": "${workspaceFolder}/bin/frenchex2",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "cwd": "${workspaceFolder}/tmp",
+            "type": "pwa-node",
+            "args": [
+                "vagrant:machine:add",
+                "--name",
+                "'test'",
+                "--type",
+                "'test'",
+                "--vcpus",
+                "2",
+                "--vram_mb",
+                "4096",
+                "--hostname_pattern",
+                "vdi-#{VAGRANT_INSTANCE}-#{NAME}-#{INSTANCE}",
+                "--instances",
+                "3",
+                "--primary"
+            ]
+        },
+        {
+            "name": "vagrant:machine:provision:add 1",
+            "program": "${workspaceFolder}/bin/frenchex2",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "cwd": "${workspaceFolder}/tmp",
+            "type": "pwa-node",
+            "args": [
+                "vagrant:machine:provision:add",
+                "--machine-name",
+                "'test'",
+                "--name",
+                "'test.provision.configure'",
+                "--env",
+                "'TEST_VAR1=value1'",
+                "--env",
+                "'TEST_VAR2=value2'"
+            ]
+        },
+        {
+            "name": "vagrant:machine:up test 1",
+            "program": "${workspaceFolder}/bin/frenchex2",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "cwd": "${workspaceFolder}/tmp",
+            "type": "pwa-node",
+            "args": [
+                "vagrant:machine:up",
+                "--name",
+                "test",
+            ]
         }
     ]
 }

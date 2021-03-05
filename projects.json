@@ -1,34 +1,24 @@
 {
-    "projects": {
-        "lib": {
-            "name": "lib",
-            "template": {
-                "name":"lib"
-            }
-        },
-        "api": {
-            "name": "api",
-            "template": {
-                "name":"api"
-            }
-        },
-        "cli": {
-            "name": "cli",
-            "template": {
-                "name":"cli"
-            }
-        },
-        "api-web-server": {
-            "name": "api-web-server",
-            "template": {
-                "name":"api-web-server"
-            }
-        },
-        "api-web-client": {
-            "name": "api-web-client",
-            "template": {
-                "name":"api-web-client"
-            }
-        }
+  "projects": {
+    "api-web-client": {
+      "Name": "api-web-client",
+      "Template": "api-web-client"
+    },
+    "api-web-server": {
+      "Name": "api-web-server",
+      "Template": "api-web-server"
+    },
+    "api": {
+      "Name": "api",
+      "Template": "api"
+    },
+    "lib": {
+      "Name": "lib",
+      "Template": "lib"
+    },
+    "cli": {
+      "Name": "cli",
+      "Template": "cli"
     }
+  }
 }
