@@ -3,6 +3,5 @@ import 'chai'
 
 describe('operations:workspace:up', function(){
     it('it', function(){
-        console.log('logging');  
     });
 });

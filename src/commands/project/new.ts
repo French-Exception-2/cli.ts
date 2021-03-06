@@ -1,8 +1,11 @@
-exports.command = 'project:new <name>'
-exports.desc = 'Create a new project in current workspace'
-exports.builder = {
+(async () => {
+  const opModule = require('./../../operations/project/new');
 
-}
-exports.handler = function (argv:any) {
-  console.log('workspace:new', argv);
-}
+  exports.command = 'project:new';
+  exports.desc = 'Project New';
+  exports.builder = opModule.builder;
+  exports.handler = async function (argv: ProjectNewArgv) {
+      const op = opModule.handle;
+      await op(argv);
+  };
+})();

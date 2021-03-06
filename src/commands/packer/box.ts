@@ -1,8 +1,11 @@
-exports.command = 'packer:box <name>'
-exports.desc = 'Run Packer'
-exports.builder = {
+(async () => {
+  const opModule = require('./../../operations/packer/box');
 
-}
-exports.handler = function (argv:any) {
-  console.log(exports.command, argv);
-}
+  exports.command = 'packer:box';
+  exports.desc = 'Packer run build';
+  exports.builder = opModule.builder;
+  exports.handler = async function (argv: PackerBoxArgv) {
+      const op = opModule.handle;
+      await op(argv);
+  };
+})();

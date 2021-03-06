@@ -55,8 +55,7 @@ exports.handler = async function (argv: VagrantMachineUpArgs) {
     });
 
     machines.forEach(async (name: string) => {
-        console.log(name);
-        await cp.spawn("vagrant", ["up", name], {
+        await cp.spawn("vagrant", ["up", name], { 
             stdio: "inherit"
         });
     });

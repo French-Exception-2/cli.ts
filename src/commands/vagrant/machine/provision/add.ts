@@ -1,61 +1,11 @@
-exports.command = 'vagrant:machine:provision:add'
-exports.desc = 'Add new Vagrant Machine Provisioning'
-exports.builder = {
-    name: {
-        type: "string",
-        required: true,
-        description: "Name of Provisioning",
-    },
-    "machine-name": {
-        type: "string",
-        required: true,
-        description: "Name of Machine to add provisioning",
-    },
-    path: {
-        type: "string",
-        default: process.cwd(),
-    },
-    enabled: {
-        type: "boolean",
-        default: true,
-    },
-    env: {
-        type: 'array',
-        default: [],
-    },
-    extension: {
-        type: 'string',
-        default: 'sh'
-    }
-}
-exports.handler = async function (argv: VagrantNodeProvisionAddArgv) {
-    const path = require('path');
-    const fs = require('fs-extra');
-    const _json = require('./../../../../operations/Serialization');
+(async () => {
+    const opModule = require('./../../../../operations/vagrant/machine/provision/add');
 
-    const json_filepath = path.join(argv.path, 'config.json');
-    let json = JSON.parse(await fs.readFile(json_filepath));
-
-    const provisioning: Partial<VagrantProvisioning> = {
-        enabled: argv.enabled,
-        extension: argv.extension,
-    }
-
-    if (argv.env) {
-        (<any>provisioning.env) = {}
-
-        argv.env.forEach((v) => {
-            const a = v.split('=');
-            (<any>provisioning.env)[a[0]] = a[1];
-        });
-    }
-
-    if (!json.nodes[argv["machine-name"]].provisioning) {
-        json.nodes[argv["machine-name"]].provisioning = {};
-    }
-
-    json.nodes[argv["machine-name"]].provisioning[argv.name] = provisioning;
-
-    const data = _json.toJson(json);
-    await fs.writeFile(json_filepath, data);
-}
+    exports.command = 'vagrant:machine:provision:add';
+    exports.desc = 'Add new Vagrant Machine Provisioning';
+    exports.builder = opModule.builder;
+    exports.handler = async function (argv: VagrantMachineProvisionAddArgv) {
+        const op = opModule.handle;
+        await op(argv);
+    };
+})();

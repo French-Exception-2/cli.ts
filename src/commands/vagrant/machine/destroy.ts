@@ -6,7 +6,6 @@
 
     }
     exports.handler = function (argv: any) {
-        console.log('workspace:new', argv);
     }
 
 })();

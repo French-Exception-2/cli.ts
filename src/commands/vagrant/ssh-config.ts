@@ -1,8 +1,11 @@
-exports.command = 'vagrant:ssh-config'
-exports.desc = 'Print ssh-config for machines'
-exports.builder = {
+(async () => {
+  const opModule = require('./../../../operations/vagrant/ssh-config');
 
-}
-exports.handler = function (argv:any) {
-  console.log(exports.command, argv);
-}
+  exports.command = 'vagrant:ssh-config';
+  exports.desc = 'Vagrant ssh-config';
+  exports.builder = opModule.builder;
+  exports.handler = async function (argv: VagrantSshConfigArgv) {
+    const op = opModule.handle;
+    await op(argv);
+  };
+})();

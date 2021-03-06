@@ -7,8 +7,8 @@
     "dev:build": "npx tsc",
     "dev:watch": "npx tsc -w",
     "package:create": "npx lerna create",
-    "test:unit": "npx mocha --recursive -r ts-node/register --extension ts --jobs 4 --parallel test",
-    "test:watch": "npx nodemon -e ts -w 'src/' -w 'test/' -x 'npm run test:unit'"
+    "test:unit": "npx mocha --recursive -r ts-node/register --extension ts test",
+    "test:watch": "npm run test:unit -- --watch"
   },
   "directories": {
     "bin": "bin"

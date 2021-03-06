@@ -1,8 +1,11 @@
-exports.command = 'project:clone'
-exports.desc = 'Clone a project'
-exports.builder = {
+(async () => {
+  const opModule = require('./../../operations/project/clone');
 
-}
-exports.handler = function (argv:any) {
-  console.log(exports.command, argv);
-}
+  exports.command = 'project:clone';
+  exports.desc = 'Project clone';
+  exports.builder = opModule.builder;
+  exports.handler = async function (argv: ProjectCloneArgv) {
+      const op = opModule.handle;
+      await op(argv);
+  };
+})();

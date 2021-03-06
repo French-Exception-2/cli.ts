@@ -1,8 +1,11 @@
-exports.command = 'packer:destroy <name>'
-exports.desc = 'Destroy a Packer box instance'
-exports.builder = {
+(async () => {
+  const opModule = require('./../../operations/packer/destroy');
 
-}
-exports.handler = function (argv:any) {
-  console.log(exports.command, argv);
-}
+  exports.command = 'packer:destroy';
+  exports.desc = 'Packer destroy build';
+  exports.builder = opModule.builder;
+  exports.handler = async function (argv: VagrantMachineProvisionAddArgv) {
+      const op = opModule.handle;
+      await op(argv);
+  };
+})();

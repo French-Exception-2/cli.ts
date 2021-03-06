@@ -1,10 +1,11 @@
-(() => {
-    exports.command = 'project:add <directory>'
-    exports.desc = 'Add an existing directory as a project into current workspace'
-    exports.builder = {
-    
-    }
-    exports.handler = function (argv:any) {
-      console.log(exports.command, argv);
-    }
-  })()
+(async () => {
+  const opModule = require('./../../operations/project/add');
+
+  exports.command = 'project:add';
+  exports.desc = 'Project add an existing directory';
+  exports.builder = opModule.builder;
+  exports.handler = async function (argv: ProjectAddArgv) {
+      const op = opModule.handle;
+      await op(argv);
+  };
+})();

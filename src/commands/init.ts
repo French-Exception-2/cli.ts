@@ -6,5 +6,4 @@ exports.builder = {
   }
 }
 exports.handler = function (argv:any) {
-  console.log('init called for dir', argv.dir)
 }

@@ -1,8 +1,11 @@
-exports.command = 'workspace:clone'
-exports.desc = 'Clone a workspace'
-exports.builder = {
+(async () => {
+  const opModule = require('./../../../operations/workspace/clone');
 
-}
-exports.handler = function (argv:any) {
-  console.log(exports.command, argv);
-}
+  exports.command = 'workspace:clone';
+  exports.desc = 'Workspace clone';
+  exports.builder = opModule.builder;
+  exports.handler = async function (argv: VagrantSshConfigArgv) {
+    const op = opModule.handle;
+    await op(argv);
+  };
+})();

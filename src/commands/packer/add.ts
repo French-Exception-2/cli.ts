@@ -1,8 +1,11 @@
-exports.command = 'packer:add <name>'
-exports.desc = 'Add a Packer box instance'
-exports.builder = {
+(async () => {
+  const opModule = require('./../../operations/packer/add');
 
-}
-exports.handler = function (argv:any) {
-  console.log(exports.command, argv);
-}
+  exports.command = 'packer:add';
+  exports.desc = 'Packer Add an existing template';
+  exports.builder = opModule.builder;
+  exports.handler = async function (argv: PackerAddArgv) {
+      const op = opModule.handle;
+      await op(argv);
+  };
+})();

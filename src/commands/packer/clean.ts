@@ -1,8 +1,11 @@
-exports.command = 'packer:clean'
-exports.desc = 'Clean'
-exports.builder = {
+(async () => {
+  const opModule = require('./../../operations/packer/clean');
 
-}
-exports.handler = function (argv:any) {
-  console.log(exports.command, argv);
-}
+  exports.command = 'packer:clean';
+  exports.desc = 'Packer clean builds and artefacts';
+  exports.builder = opModule.builder;
+  exports.handler = async function (argv: PackerCleanArgv) {
+      const op = opModule.handle;
+      await op(argv);
+  };
+})();

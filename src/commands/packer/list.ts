@@ -1,8 +1,11 @@
-exports.command = 'packer:list'
-exports.desc = 'List available Packer boxes'
-exports.builder = {
+(async () => {
+  const opModule = require('./../../operations/packer/list');
 
-}
-exports.handler = function (argv:any) {
-  console.log(exports.command, argv);
-}
+  exports.command = 'packer:list';
+  exports.desc = 'Packer List templates';
+  exports.builder = opModule.builder;
+  exports.handler = async function (argv: PackerListArgs) {
+      const op = opModule.handle;
+      await op(argv);
+  };
+})();
