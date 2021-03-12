@@ -1,11 +1,13 @@
 (() => {
 
-    exports.command = 'vagrant:machine:destroy <name>'
-    exports.desc = 'Add a new machine a new project in current workspace'
-    exports.builder = {
+    const opModule = require('./../../../operations/vagrant/machine/destroy');
 
-    }
-    exports.handler = function (argv: any) {
-    }
+    exports.command = 'vagrant:machine:destroy';
+    exports.desc = 'Vagrant Destroy a Machine';
+    exports.builder = opModule.builder;
+    exports.handler = async function (argv: VagrantMachineDestroyArgv) {
+        const op = opModule.handle;
+        await op(argv);
+    };
 
 })();

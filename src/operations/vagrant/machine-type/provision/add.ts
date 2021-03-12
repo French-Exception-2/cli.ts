@@ -52,7 +52,7 @@ exports.handle =  async function (argv:VagrantMachineTypeProvisionAddArgv){
         });
     }
 
-    if (!json["nodes-types"][argv.type].provisioning) {
+    if (!json["nodes-types"][argv.type].provisioning || Array.isArray(json["nodes-types"][argv.type].provisioning)) {
         json["nodes-types"][argv.type].provisioning = {};
     }
 

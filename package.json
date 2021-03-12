@@ -2,7 +2,7 @@
   "name": "@frenchex2/cli.ts",
   "version": "1.0.0",
   "description": "Development environment for @frenchex2 products",
-  "main": "src/cli.ts",
+  "main": "build/src/cli.js",
   "scripts": {
     "dev:build": "npx tsc",
     "dev:watch": "npx tsc -w",
@@ -10,8 +10,8 @@
     "test:unit": "npx mocha --recursive -r ts-node/register --extension ts test",
     "test:watch": "npm run test:unit -- --watch"
   },
-  "directories": {
-    "bin": "bin"
+  "bin":{
+    "frenchex2": "./bin/frenchex2"
   },
   "keywords": [
     "dev",

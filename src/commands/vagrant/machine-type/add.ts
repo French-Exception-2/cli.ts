@@ -1,4 +1,4 @@
-(async () => {
+(() => {
   const opModule = require('./../../../operations/vagrant/machine-type/add');
 
   exports.command = 'vagrant:machine-type:add';

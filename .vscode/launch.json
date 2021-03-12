@@ -34,7 +34,7 @@
             "cwd": "${workspaceFolder}/tmp",
             "type": "pwa-node",
             "args": [
-                "vagrant:type:add",
+                "vagrant:machine-type:add",
                 "--name",
                 "'test'",
                 "--vcpus",
@@ -69,7 +69,7 @@
             "cwd": "${workspaceFolder}/tmp",
             "type": "pwa-node",
             "args": [
-                "vagrant:type:provision:add",
+                "vagrant:machine-type:provision:add",
                 "--name",
                 "'test'",
                 "--type",
@@ -140,6 +140,23 @@
                 "vagrant:machine:up",
                 "--name",
                 "test",
+            ]
+        },
+        {
+            "name": "vagrant:machine:ssh-config test 1",
+            "program": "${workspaceFolder}/bin/frenchex2",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "cwd": "${workspaceFolder}/tmp",
+            "type": "pwa-node",
+            "args": [
+                "vagrant:machine:ssh-config",
+                "--name",
+                "test",
+                "--instance",
+                "0"
             ]
         }
     ]

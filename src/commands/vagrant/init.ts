@@ -1,5 +1,5 @@
 (async () => {
-    const opModule = require('./../../../operations/vagrant/init');
+    const opModule = require('./../../operations/vagrant/init');
   
     exports.command = 'vagrant:init';
     exports.desc = 'Vagrant init';
