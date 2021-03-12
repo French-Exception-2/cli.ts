@@ -1,14 +1,17 @@
-exports.builder = {
-    raw: {
-        type:'boolean',
-        default: false
-    },
-    key: {
-        type: 'string',
-        required: true
-    }
-}
+import { ConfigGetArgv } from "../../interfaces/config/ConfigGetArgv";
 
-exports.handle = async function(argv:ConfigGetArgv) {
-    
+module.exports = {
+    builder :{
+        raw: {
+            type: 'boolean',
+            default: false
+        },
+        key: {
+            type: 'string',
+            required: true
+        }
+    },
+    handle: async function(argv:ConfigGetArgv){
+
+    }
 }

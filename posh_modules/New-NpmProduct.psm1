@@ -1,7 +1,7 @@
 function New-NpmProduct {
     param(
         [parameter(Mandatory = $true)]   [string] $Name,
-        [parameter(Mandatory = $false)]   [string] $Scope,
+        [parameter(Mandatory = $false)]  [string] $Scope,
         [switch] $DestroyBefore,
         [switch] $Force,
         [switch] $ChangeLocation
@@ -19,32 +19,9 @@ function New-NpmProduct {
 
     # we are now in the lerna workspace
 
-    $config = @{
-        projects = @{
-            "api"            = @{
-                Name     = "api"
-                Template = "api"
-            }
-            "lib"            = @{
-                Name     = "lib"
-                Template = "lib"
-            }
-            "cli"            = @{
-                Name     = "cli"
-                Template = "cli"
-            }
-            "api-web-client" = @{
-                Name     = "api-web-client"
-                Template = "api-web-client"
-            }
-            "api-web-server" = @{
-                Name     = "api-web-server"
-                Template = "api-web-server"
-            }
-        }
-    }
+  
 
-    $config | convertto-json | Out-File projects.json -Encoding utf8
+    $config | convertto-json | Out-File projects.json -Encoding ascii
 
     $packages_location = Get-Location
 

@@ -1,0 +1,7 @@
+{
+  "vagrant": {
+    "instance": 1,
+    "group": "Vagrant Instance Group",
+    "provider": "virtualbox"
+  }
+}

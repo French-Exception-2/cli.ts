@@ -25,7 +25,7 @@
             ]
         },
         {
-            "name": "vagrant:type:add 1",
+            "name": "vagrant:machine-type:add 1",
             "program": "${workspaceFolder}/bin/frenchex2",
             "request": "launch",
             "skipFiles": [
@@ -60,7 +60,7 @@
             ]
         },
         {
-            "name": "vagrant:type:provision:add 1",
+            "name": "vagrant:machine-type:provision:add 1",
             "program": "${workspaceFolder}/bin/frenchex2",
             "request": "launch",
             "skipFiles": [

@@ -10,7 +10,8 @@
       "strict": true,
       "esModuleInterop": true,
       "noEmitOnError": true,
-      "watch": false
+      "watch": false,
+      "module": "ES2020"
     },
     "exclude": [
       "node_modules"

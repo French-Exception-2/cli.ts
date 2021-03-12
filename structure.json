@@ -1,0 +1,147 @@
+{
+  "bare-metals": {
+    "baremetal-00": {
+      "ip": "10.100.1.2",
+      "hostname": "BM-00",
+      "user": "serard",
+      "tags": ["prod"],
+      "vm_provider": "virtualbox"
+    },
+    "baremetal-01": {
+      "ip": "10.100.1.3",
+      "hostname": "BM-02",
+      "user": "serard",
+      "tags": ["preprod"],
+      "vm_provider": "virtualbox"
+    },
+    "baremetal-02": {
+      "ip": "10.100.1.4",
+      "hostname": "BM-02",
+      "user": "serard",
+      "tags": ["dev", "ci", "qa", "uat"],
+      "vm_provider": "virtualbox"
+    }
+  },
+  "version": "1.0.0",
+  "acme": "acme",
+  "tld": "fr",
+  "dns": {
+    "intranet": {"domain": ".%acme%.intranet"},
+    "extranet": {"domain": ".%acme%.%tld%"}
+  },
+  "environments":  {
+    "infra": {
+      "name": "Infrastructure",
+      "alias": "infra",
+      "ip": {
+        "pattern": "10.99.1.#{IP_LAST}",
+        "mask": "24"
+      },
+      "type": "k8s-internal",
+      "vars": {
+        "masters": 1,
+        "workers": 1
+      }
+    },
+    "dev": {
+      "name": "Infrastructure",
+      "alias": "dev",
+      "ip": {
+        "pattern": "10.100.1.#{IP_LAST}",
+        "mask": "24"
+      },
+      "type": "k8s-internal",
+      "vars": {
+        "masters": 1,
+        "workers": 1
+      }
+    },
+    "ci": {
+      "name": "Infrastructure",
+      "alias": "ci",
+      "ip": {
+        "pattern": "10.100.2.#{IP_LAST}",
+        "mask": "24"
+      },
+      "type": "k8s-internal",
+      "vars": {
+        "masters": 1,
+        "workers": 1
+      }
+    },
+    "qa": {
+      "name": "Infrastructure",
+      "alias": "qa",
+      "ip": {
+        "pattern": "10.100.3.#{IP_LAST}",
+        "mask": "24"
+      },
+      "type": "k8s-internal",
+      "vars": {
+        "masters": 1,
+        "workers": 1
+      }
+    },
+    "uat": {
+      "name": "Infrastructure",
+      "alias": "uat",
+      "ip": {
+        "pattern": "10.100.4.#{IP_LAST}",
+        "mask": "24"
+      },
+      "type": "k8s-internal",
+      "vars": {
+        "masters": 1,
+        "workers": 1
+      }
+    },
+    "preprod": {
+      "name": "Infrastructure",
+      "alias": "infra",
+      "ip": {
+        "pattern": "10.100.5.#{IP_LAST}",
+        "mask": "24"
+      },
+      "type": "k8s-public",
+      "vars": {
+        "masters": 1,
+        "workers": 1
+      }
+    },
+    "prod": {
+      "name": "Infrastructure",
+      "alias": "infra",
+      "ip": {
+        "pattern": "10.100.6.#{IP_LAST}",
+        "mask": "24"
+      },
+      "type": "k8s-public",
+      "vars": {
+        "masters": 1,
+        "workers": 1
+      }
+    }
+  },
+  "projects": {
+    "api-web-client": {
+      "Name": "api-web-client",
+      "Template": "api-web-client"
+    },
+    "api-web-server": {
+      "Name": "api-web-server",
+      "Template": "api-web-server"
+    },
+    "api": {
+      "Name": "api",
+      "Template": "api"
+    },
+    "lib": {
+      "Name": "lib",
+      "Template": "lib"
+    },
+    "cli": {
+      "Name": "cli",
+      "Template": "cli"
+    }
+  }
+}

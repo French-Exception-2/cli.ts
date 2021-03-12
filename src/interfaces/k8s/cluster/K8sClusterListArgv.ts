@@ -1,0 +1,3 @@
+interface K8sClusterListArgv {
+    
+}

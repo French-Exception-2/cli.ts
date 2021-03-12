@@ -1,7 +1,7 @@
 function New-LernaWorkspace {
     param(
         [parameter(Mandatory = $true)]   [string] $Name,
-        [parameter(Mandatory = $false)]   [string] $Scope,
+        [parameter(Mandatory = $false)]  [string] $Scope,
         [parameter(Mandatory = $false)]  [string] $PackagesPath = "./packages",
         [switch] $ChangeLocation,
         [switch] $DestroyBefore,

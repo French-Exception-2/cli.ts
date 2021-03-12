@@ -4,6 +4,7 @@
     exports.command = 'config:dump';
     exports.desc = 'Dump configuration';
     exports.builder = opModule.builder;
+    exports.group = "Config"
     exports.handler = async function (argv: ConfigDumpArgv) {
         const op = opModule.handle;
         await op(argv);

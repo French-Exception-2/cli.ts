@@ -7,8 +7,9 @@
     "dev:build": "npx tsc",
     "dev:watch": "npx tsc -w",
     "package:create": "npx lerna create",
-    "test:unit": "npx mocha --recursive -r ts-node/register --extension ts test",
-    "test:watch": "npm run test:unit -- --watch"
+    "test:unit": "npx mocha --config .mocharc.json",
+    "test:unit:all": "npx mocha --config .mocharc.json test",
+    "test:watch": "npm run test:unit:all -- --watch"
   },
   "bin":{
     "frenchex2": "./bin/frenchex2"
@@ -30,7 +31,6 @@
     "@types/fs-extra": "^9.0.8",
     "@types/mocha": "^8.2.1",
     "@types/node": "^14.14.31",
-    "@types/yargs": "^16.0.0",
     "chai": "^4.3.0",
     "deepmerge": "^4.2.2",
     "fs-extra": "^8.1.0",
@@ -46,5 +46,8 @@
     "ts-node": "^9.1.1",
     "ts-watch": "^1.0.8",
     "yargs": "^14.2.3"
+  },
+  "devDependencies": {
+    "@types/yargs": "^16.0.0"
   }
 }

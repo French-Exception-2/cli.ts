@@ -30,7 +30,7 @@ exports.builder = {
     }
 }
 
-exports.handle =  async function (argv:VagrantMachineTypeProvisionAddArgv){
+exports.handle = async function (argv: VagrantMachineTypeProvisionAddArgv) {
     const path = require('path');
     const fs = require('fs-extra');
     const _json = require('./../../../../operations/Serialization');
@@ -53,6 +53,10 @@ exports.handle =  async function (argv:VagrantMachineTypeProvisionAddArgv){
     }
 
     if (!json["nodes-types"][argv.type].provisioning || Array.isArray(json["nodes-types"][argv.type].provisioning)) {
+        json["nodes-types"][argv.type].provisioning = {};
+    }
+
+    if (Array.isArray(json["nodes-types"][argv.type].provisioning)) {
         json["nodes-types"][argv.type].provisioning = {};
     }
 
