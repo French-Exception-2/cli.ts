@@ -21,7 +21,9 @@ sudo apt-get install -y \
         zlib1g \
         curl
 
-vagrant_cache_dir=${vagrant_cache_dir:="/vagrant/.vagrant-cache"}
+vagrant_cache_dir=${vagrant_cache_dir:="/vagrant/.vagrant/cache"}
+
+(mkdir -p $vagrant_cache_dir) || true
 
 curl -sSL  $powershell_url -o $vagrant_cache_dir/${powershell_deb}
 

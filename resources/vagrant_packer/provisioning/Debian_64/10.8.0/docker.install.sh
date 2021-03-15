@@ -6,17 +6,17 @@ debian_id=${debian_id:=$(lsb_release -is | tr '[:upper:]' '[:lower:]')}
 debian_realcodename="${debian_code_name:=$(lsb_release -cs | tr '[:upper:]' '[:lower:]')}"
 #debian_codename="${debian_realcodename}"
 realarch=$(dpkg --print-architecture)
-docker_ce_cli_version=${docker_ce_cli_version:="19.03.9~3-0"}
+docker_ce_cli_version=${docker_ce_cli_version:="20.10.5~3-0"}
 docker_ce_cli_deb="docker-ce-cli_${docker_ce_cli_version}~${debian_id}-${debian_realcodename}_${realarch}.deb"
 docker_ce_cli_deb_download_url="https://download.docker.com/linux/${debian_id}/dists/${debian_realcodename}/pool/stable/${realarch}/${docker_ce_cli_deb}"
-containerd_version=${containerd_version:="1.4.3-1"}
+containerd_version=${containerd_version:="1.4.4-1"}
 containerd_deb="containerd.io_${containerd_version}_amd64.deb"
 containerd_deb_download_url="https://download.docker.com/linux/${debian_id}/dists/${debian_realcodename}/pool/stable/${realarch}/${containerd_deb}"
-docker_ce_version=${docker_ce_version:="19.03.9~3-0"}
+docker_ce_version=${docker_ce_version:="20.10.5~3-0"}
 docker_ce_deb="docker-ce_${docker_ce_version}~${debian_id}-${debian_realcodename}_${realarch}.deb"
 docker_ce_deb_download_url="https://download.docker.com/linux/${debian_id}/dists/${debian_realcodename}/pool/stable/${realarch}/${docker_ce_deb}"
 
-vagrant_cache_dir=${vagrant_cache_dir:="/vagrant/.vagrant-cache"}
+vagrant_cache_dir=${vagrant_cache_dir:="/vagrant/.vagrant/cache"}
 
 (mkdir -p $vagrant_cache_dir) || true
 

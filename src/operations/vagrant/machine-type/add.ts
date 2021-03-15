@@ -100,7 +100,7 @@ exports.handle = async function(argv:VagrantMachineTypeAddArgv) {
     os_version: argv.os_version,
     ram_mb: argv.ram_mb,
     vram_mb: argv.vram_mb,
-    "3d": argv['3d'],
+    "3d": (argv['3d'] ? "on" : "off"),
     bioslogoimage: argv.bioslogoimage,
     pagefusion: argv.pagefusion,
     gui: argv.gui,

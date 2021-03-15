@@ -1,5 +1,3 @@
-import { ConfigGetArgv } from "../../interfaces/config/ConfigGetArgv";
-
 module.exports = {
     builder :{
         raw: {

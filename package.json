@@ -5,13 +5,13 @@
   "main": "build/src/cli.js",
   "scripts": {
     "dev:build": "npx tsc",
-    "dev:watch": "npx tsc -w",
+    "dev:watch": "npx nodemon --exec 'npx tsc' --watch src --ext ts",
     "package:create": "npx lerna create",
     "test:unit": "npx mocha --config .mocharc.json",
     "test:unit:all": "npx mocha --config .mocharc.json test",
     "test:watch": "npm run test:unit:all -- --watch"
   },
-  "bin":{
+  "bin": {
     "frenchex2": "./bin/frenchex2"
   },
   "keywords": [
@@ -37,7 +37,6 @@
     "json": "^10.0.0",
     "lerna": "^3.22.1",
     "mocha": "^8.3.0",
-    "nodemon": "^2.0.7",
     "nyc": "^15.1.0",
     "pkg-jq": "^0.2.11",
     "source-map-support": "^0.5.19",
@@ -48,6 +47,7 @@
     "yargs": "^14.2.3"
   },
   "devDependencies": {
-    "@types/yargs": "^16.0.0"
+    "@types/yargs": "^16.0.0",
+    "nodemon": "^2.0.7"
   }
 }

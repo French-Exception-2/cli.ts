@@ -5,7 +5,7 @@ exports.builder = {
     },
     hostname_pattern: {
         type: "string",
-        default: "vdi-#{INSTANCE}-#{NAME}-#{NUMBER}",
+        default: "vdi-#{VAGRANT_INSTANCE}-#{NAME}-#{INSTANCE}",
     },
     instances: {
         type: "number",
@@ -23,7 +23,7 @@ exports.builder = {
     },
     ip_pattern: {
         type: "string",
-        default: "10.100.2.#{NUMBER}"
+        default: "10.100.2.#{INSTANCE}"
     },
     ip_start: {
         type: "number",

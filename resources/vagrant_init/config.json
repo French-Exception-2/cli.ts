@@ -5,7 +5,7 @@
                 "version": ">= 1.8.9",
                 "enabled": true,
                 "config": {
-                    "hostmanager.enabled": false,
+                    "hostmanager.enabled": true,
                     "hostmanager.manage_host": true,
                     "hostmanager.manage_guest": true
                 }
@@ -29,7 +29,5 @@
     },
     "nodes-types": {},
     "nodes": {},
-    "packer": {
-        "debian10": {}
-    }
+    "packer": {}
 }
