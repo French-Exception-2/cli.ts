@@ -22,7 +22,6 @@ frenchex2 vagrant:machine-type:add                          `
                          --enabled                          `
                          --box "debian/contrib-buster64"
 
-
 frenchex2 vagrant:machine-type:provision:add                `
                         --name "apt.configure"              `
                         --type "dev"                        
@@ -41,10 +40,7 @@ frenchex2 vagrant:machine-type:provision:add                `
 
 frenchex2 vagrant:machine:add --name "dev"                  `
                         --type "dev"                        `
-                        --instance 0                        
+                        --instance 0                        `
+                        --status
 
-vagrant status
-
-vagrant up vdi-01-dev-00
-
-# frenchex2 vagrant:machine:up --name "dev"
+frenchex2 vagrant:machine:up --name "dev" --instance 0

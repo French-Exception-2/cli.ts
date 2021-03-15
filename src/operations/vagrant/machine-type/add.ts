@@ -90,7 +90,6 @@ exports.builder = {
 exports.handle = async function(argv:VagrantMachineTypeAddArgv) {
     const path = require('path');
   const fs = require('fs-extra');
-  const deepmerge = require('deepmerge');
   const _json = require('./../../../operations/Serialization.js');
 
   const type = {

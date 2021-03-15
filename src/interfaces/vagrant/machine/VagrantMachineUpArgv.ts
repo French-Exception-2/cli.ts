@@ -1,6 +1,6 @@
 interface VagrantMachineUpArgv {
     path:string
-    name: Array<string>
-    instances:Array<number>
+    name: string
+    instance:number
     provision:boolean
 }

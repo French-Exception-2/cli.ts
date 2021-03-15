@@ -47,6 +47,7 @@
     "yargs": "^14.2.3"
   },
   "devDependencies": {
+    "@types/sprintf-js": "^1.1.2",
     "@types/yargs": "^16.0.0",
     "nodemon": "^2.0.7"
   }

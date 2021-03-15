@@ -128,7 +128,7 @@
             ]
         },
         {
-            "name": "vagrant:machine:up test 1",
+            "name": "vagrant:machine:up dev 1",
             "program": "${workspaceFolder}/bin/frenchex2",
             "request": "launch",
             "skipFiles": [
@@ -139,7 +139,7 @@
             "args": [
                 "vagrant:machine:up",
                 "--name",
-                "test",
+                "dev",
             ]
         },
         {
