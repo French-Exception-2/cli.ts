@@ -51,3 +51,5 @@ $name = frenchex2 vagrant:machine:name --name dev --instance 0
 
 docker context create remote --docker "host=ssh://vagrant@${name}"
 
+frenchex2 vagrant:machine:halt --name "dev" --instance 0
+frenchex2 vagrant:machine:destroy --name "dev" --instance 0
