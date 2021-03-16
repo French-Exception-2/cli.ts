@@ -1,6 +1,6 @@
 exports.builder = {
     name: {
-        type: 'string',
+        type:'string',
         desc: "Name of Vagrant Machine instance"
     },
     instance: {
@@ -11,14 +11,10 @@ exports.builder = {
     path: {
         type: "string",
         default: process.cwd(),
-    },
-    force: {
-        type: "boolean",
-        default: false
     }
 }
 
-exports.handle = async function (argv: VagrantMachineDestroyArgv) {
+exports.handle = async function(argv:VagrantMachineNameArgv){
     const path = require('path');
     const fs = require('fs-extra');
     const _json = require('./../../../operations/Serialization');
@@ -37,10 +33,9 @@ exports.handle = async function (argv: VagrantMachineDestroyArgv) {
     const vagrant_instance_str = sprintf('%02d', merged.vagrant.instance);
     const vagrant_machine_instance_str = sprintf('%02d', argv.instance);
     const vagrant_machine_str = merged.nodes[argv.name].hostname_pattern
-        .replace(/\#\{VAGRANT_INSTANCE\}/, vagrant_instance_str)
-        .replace(/\#\{NAME\}/, argv.name)
-        .replace(/\#\{INSTANCE\}/, vagrant_machine_instance_str)
+    .replace(/\#\{VAGRANT_INSTANCE\}/, vagrant_instance_str)
+    .replace(/\#\{NAME\}/, argv.name)
+    .replace(/\#\{INSTANCE\}/, vagrant_machine_instance_str)
 
-    await cp.spawn("vagrant", ["destroy", vagrant_machine_str, (argv.force ? "--force" : "")], { stdio: "inherit" });
-
+    console.log(vagrant_machine_str);
 }

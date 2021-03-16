@@ -3,7 +3,7 @@ param(
 )
 
 if (test-path .vagrant) {
-    rm -recurse -force .vagrant
+    Remove-Item -recurse -force .vagrant
 }
 
 frenchex2 vagrant:init --instance 1 --group "Test"
@@ -44,3 +44,10 @@ frenchex2 vagrant:machine:add --name "dev"                  `
                         --status
 
 frenchex2 vagrant:machine:up --name "dev" --instance 0
+
+docker context remove remote -f
+
+$name = frenchex2 vagrant:machine:name --name dev --instance 0
+
+docker context create remote --docker "host=ssh://vagrant@${name}"
+
