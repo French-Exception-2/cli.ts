@@ -1,32 +1,5 @@
 {
-    "vagrant": {
-        "plugins": {
-            "vagrant-hostmanager": {
-                "version": ">= 1.8.9",
-                "enabled": true,
-                "config": {
-                    "hostmanager.enabled": true,
-                    "hostmanager.manage_host": true,
-                    "hostmanager.manage_guest": true
-                }
-            },
-            "vagrant-vbguest": {
-                "version": ">= 0.16.0",
-                "enabled": true,
-                "config": {
-                    "vbguest.auto_update": false,
-                    "vbguest.auto_reboot": false,
-                    "vbguest.installer_arguments": [
-                        "--nox11"
-                    ]
-                }
-            },
-            "vagrant-reload": {
-                "version": ">= 0.0.1",
-                "enabled": true
-            }
-        }
-    },
+    "vagrant": {},
     "nodes-types": {},
     "nodes": {},
     "packer": {}

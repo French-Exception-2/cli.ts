@@ -6,9 +6,9 @@
     "slow": 1500,
     "timeout": 20000,
     "recursive": true,
-    "file": [],
     "ui": "bdd",
     "watch-files": ["src/**/*.ts", "test/**/*.ts"],
     "watch-ignore": ["node_modules"],
-    "require": ["ts-node/register", "source-map-support/register"]
+    "require": ["ts-node/register", "source-map-support/register"],
+    "parallel": true
     }

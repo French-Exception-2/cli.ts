@@ -4,12 +4,11 @@
   "description": "Development environment for @frenchex2 products",
   "main": "build/src/cli.js",
   "scripts": {
-    "dev:build": "npx tsc",
-    "dev:watch": "npx nodemon --exec 'npx tsc' --watch src --ext ts",
-    "package:create": "npx lerna create",
-    "test:unit": "npx mocha --config .mocharc.json",
-    "test:unit:all": "npx mocha --config .mocharc.json test",
-    "test:watch": "npm run test:unit:all -- --watch"
+    "clean": "npx rimraf ./build",
+    "build": "npx tsc --build",
+    "watch": "npx ts-node ./dev/watch.ts",
+    "test": "npx mocha --config .mocharc.json",
+    "test:watch": "npx nodemon --exec 'npm run test' --ext ts --watch src"
   },
   "bin": {
     "frenchex2": "./bin/frenchex2"
@@ -26,7 +25,10 @@
   },
   "license": "Educational, non-profit use",
   "dependencies": {
+    "@frenchex/config-api": "^0.3.2",
+    "@frenchex/config-cli": "^0.3.6",
     "@types/chai": "^4.2.15",
+    "@types/chokidar": "^2.1.3",
     "@types/deepmerge": "^2.2.0",
     "@types/fs-extra": "^9.0.8",
     "@types/mocha": "^8.2.1",
@@ -34,14 +36,23 @@
     "@types/sprintf-js": "^1.1.2",
     "@types/yargs": "^16.0.0",
     "chai": "^4.3.0",
+    "chokidar-cli": "^2.1.0",
+    "configuration": "^2.4.2",
     "deepmerge": "^4.2.2",
+    "frenchex-parameters-container": "^1.0.0",
     "fs-extra": "^8.1.0",
+    "glob": "^7.1.6",
     "json": "^10.0.0",
+    "keypress": "^0.2.1",
     "lerna": "^3.22.1",
     "mocha": "^8.3.0",
+    "nconf": "^0.11.2",
     "nodemon": "^2.0.7",
+    "npm-watch": "^0.9.0",
     "nyc": "^15.1.0",
+    "onchange": "^7.1.0",
     "pkg-jq": "^0.2.11",
+    "rimraf": "^2.7.1",
     "source-map-support": "^0.5.19",
     "sprintf-js": "^1.0.3",
     "swig": "^0.14.0",
@@ -49,5 +60,7 @@
     "ts-watch": "^1.0.8",
     "yargs": "^14.2.3"
   },
-  "devDependencies": {}
+  "watch": {
+    "watch": "{src/test}/**.ts"
+  }
 }

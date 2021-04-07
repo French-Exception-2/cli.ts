@@ -19,8 +19,10 @@ Vagrant.configure(VAGRANT_VERSION) do |config|
 
   # Plugins
 
+  if (vagrant_config['vagrant'] && vagrant_config['vagrant']['plugins'])
+
     # Networking plugin hostmanager #
-        if Vagrant.has_plugin?('vagrant-hostmanager') && true == vagrant_config['vagrant']['plugins']['vagrant-hostmanager']['enabled']
+        if Vagrant.has_plugin?('vagrant-hostmanager') && vagrant_config['vagrant']['plugins']['vagrant-hostmanager'] && true === vagrant_config['vagrant']['plugins']['vagrant-hostmanager']['enabled']
           config.hostmanager.enabled             =   vagrant_config["vagrant"]["plugins"]["vagrant-hostmanager"]["config"]["hostmanager.enabled"] || false
           config.hostmanager.manage_host         =   vagrant_config["vagrant"]["plugins"]["vagrant-hostmanager"]["config"]["hostmanager.manage_host"] || false
           config.hostmanager.manage_guest        =   vagrant_config["vagrant"]["plugins"]["vagrant-hostmanager"]["config"]["hostmanager.manage_guest"] || false
@@ -28,7 +30,7 @@ Vagrant.configure(VAGRANT_VERSION) do |config|
 
     # VB Guest
     
-        if Vagrant.has_plugin?('vagrant-vbguest')  && true == vagrant_config['vagrant']['plugins']['vagrant-vbguest']['enabled']
+        if Vagrant.has_plugin?('vagrant-vbguest')  && vagrant_config['vagrant']['plugins']['vagrant-vbguest'] && true === vagrant_config['vagrant']['plugins']['vagrant-vbguest']['enabled']
             config.vbguest.auto_update              =   vagrant_config["vagrant"]["plugins"]["vagrant-vbguest"]["config"]["vbguest.auto_update"] || false
             config.vbguest.auto_reboot              =   vagrant_config["vagrant"]["plugins"]["vagrant-vbguest"]["config"]["vbguest.auto_reboot"] || false
             config.vbguest.installer_arguments      =   vagrant_config["vagrant"]["plugins"]["vagrant-vbguest"]["config"]["vbguest.installer_arguments"] || false
@@ -40,33 +42,33 @@ Vagrant.configure(VAGRANT_VERSION) do |config|
             config.env.enable
         end
 
+  end # End Plugins
+
+
   # Virtual Machines
   # Iterate through nodes entry in JSON file
   vagrant_config["nodes"].each do |servername, server|
-    
     if (!server['enabled'])
       next
     end
+
     
     srv_type_name = server['vagrant_type']
     srv_type = vagrant_config['nodes-types'][srv_type_name]
+    server = Vagrant::Util::DeepMerge.deep_merge(srv_type, server)
+
     instances_n = server['instances'].to_i
     
     (0..instances_n-1).each { |instance| 
-      
       instance_str = format('%02d', instance)
-
       ip = server['ip_pattern'].gsub("\#{INSTANCE}", (instance+server["ip_start"]).to_s)
-     
+
       servername_real = server["hostname_pattern"]
         .gsub("\#{INSTANCE}", instance_str)
         .gsub("\#{NAME}", servername)
-        .gsub("\#{VAGRANT_INSTANCE}", format('%02d', vagrant_config['vagrant']['instance']))
+        .gsub("\#{VAGRANT_INSTANCE}", format('%02d', (vagrant_config['vagrant']['instance'] || 0)))
       
       config.vm.define servername_real, primary: (server['primary'] && instance == 0) do |srv|
-
-        server = Vagrant::Util::DeepMerge.deep_merge(srv_type, server)
-
         srv.trigger.after :up, :reload do |trigger|
           trigger.ruby do |env,machine|
             puts "==> #{machine.name}: Updating your ssh config."            
@@ -89,13 +91,15 @@ Vagrant.configure(VAGRANT_VERSION) do |config|
         end
 
         srv.vm.network 'private_network', ip: ip
-  
-        srv.vm.network "public_network", bridge: server['bridge'] || ENV['vagrant_machine_default_bridge']
 
+        srv.vm.network "public_network", bridge: server['bridge'] || ENV['vagrant_machine_default_bridge']
+        
         srv.vm.hostname = servername_real
-  
+       
         srv.vm.provider "virtualbox" do |vb|
+          
           vb.customize ["modifyvm", :id, "--cpuexecutioncap", server['cpucap']]
+          
           vb.customize ["modifyvm", :id, "--nicpromisc1", "allow-all"]
           vb.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
           vb.customize ["modifyvm", :id, "--nicpromisc3", "allow-all"]
@@ -115,9 +119,9 @@ Vagrant.configure(VAGRANT_VERSION) do |config|
           vb.customize ["modifyvm", :id, "--usb", "off"]
           vb.customize ["modifyvm", :id, "--ostype", server['os_type']]
           vb.customize ["modifyvm", :id, "--vram", server['vram_mb']]
-          vb.customize ["modifyvm", :id, "--groups", "/" + (server['group'] ? server['group'] : vagrant_config['vagrant']['group']).gsub("\n",'').to_s]
+          vb.customize ["modifyvm", :id, "--groups", "/" + (server['group'] ? server['group'] : vagrant_config['vagrant']['group'] ? vagrant_config['vagrant']['group'] : "").gsub("\n",'').to_s]
           vb.customize ["modifyvm", :id, "--accelerate3d", (server['3d'] ? 'on': 'off')]
-         
+          
           if (server['bioslogoimagepath'] || srv_type['bioslogoimagepath'])
             vb.customize ["modifyvm", :id, "--bioslogoimagepath", File.expand_path(server['bioslogoimagepath'] || srv_type['bioslogoimagepath'])]
           end
@@ -126,11 +130,11 @@ Vagrant.configure(VAGRANT_VERSION) do |config|
           vb.cpus   = server["vcpus"]
           vb.gui    = server["gui"]
         end # srv.vm.provider virtualbox
-  
-        if (Vagrant.has_plugin?('vagrant-hostmanager') && true == vagrant_config['vagrant']['plugins']['vagrant-vbguest']['enabled'])
+
+        if (Vagrant.has_plugin?('vagrant-hostmanager') && vagrant_config['vagrant'] && vagrant_config['vagrant']['plugins'] && vagrant_config['vagrant']['plugins']['vagrant-vbguest'] && true === vagrant_config['vagrant']['plugins']['vagrant-vbguest']['enabled'])
           config.vm.provision :hostmanager
         end
-
+        
         if (server['files'])
           server['files'].each do |key,value|
             if (value['enabled'] && true != value['enabled'])
@@ -164,7 +168,7 @@ Vagrant.configure(VAGRANT_VERSION) do |config|
           server['provisioning'].each do |key,value|
             extension = value['ext'] || 'sh'
             if (server && server['provisioning'] && server['provisioning'][key]) then
-              env = (value['env'] || {}).merge(server['provisioning'][key]).to_h
+              env = {} #(value['env'] || {}).merge(server['provisioning'][key]).to_h
             else
               env = value['env'] || {}
             end
@@ -172,7 +176,7 @@ Vagrant.configure(VAGRANT_VERSION) do |config|
               srv.vm.provision :reload
             end
             srv.vm.provision "shell", name: key, 
-                                      path: "./.vagrant/provisioning/#{os_type}/#{os_version}/#{key}.#{extension}", 
+                                      path: "./provisioning/#{os_type}/#{os_version}/#{key}.#{extension}", 
                                       env: env, 
                                       privileged: value['privileged'] || false
   

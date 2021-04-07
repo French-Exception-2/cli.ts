@@ -5,6 +5,26 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Current TS File",
+            "type": "node",
+            "request": "launch",
+            "args": ["${relativeFile}"],
+            "runtimeArgs": ["--nolazy", "-r", "ts-node/register", "-r", "source-map-support/register"],
+            "sourceMaps": true,
+            "cwd": "${workspaceRoot}",
+            "protocol": "inspector",
+        },
+        {
+            "name": "Launch Program",
+            "program": "${workspaceFolder}/watch.ts",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "type": "pwa-node"
+        },
+        
+        {
             "name": "vagrant:init --status --instance 1 --group \"Test\" --provider \"virtualbox\"",
             "program": "${workspaceFolder}/bin/frenchex2",
             "request": "launch",
@@ -139,7 +159,7 @@
             "args": [
                 "vagrant:machine:up",
                 "--name",
-                "dev",
+                "infra",
             ]
         },
         {
@@ -157,6 +177,21 @@
                 "test",
                 "--instance",
                 "0"
+            ]
+        },
+        {
+            "name": "config:get test",
+            "program": "${workspaceFolder}/bin/frenchex2",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "cwd": "${workspaceFolder}/tmp",
+            "type": "pwa-node",
+            "args": [
+                "config:get",
+                "--key",
+                "nodes-types"
             ]
         }
     ]

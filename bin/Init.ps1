@@ -27,6 +27,11 @@ frenchex2 vagrant:machine-type:provision:add                `
                         --type "dev"                        
 
 frenchex2 vagrant:machine-type:provision:add                `
+                        --name "ipv6.disable"               `
+                        --type "dev"                        
+
+
+frenchex2 vagrant:machine-type:provision:add                `
                         --name "apt.update"                 `
                         --type "dev"                        
 
