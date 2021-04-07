@@ -6,6 +6,7 @@ param(
     [string] $DiskSizeGB_HR = "200",
     [string] $BoxType = "dev-docker",
     [string] $Provider = "virtualbox",
+    [parameter(Mandatory=$true)] [string] $SHA512Checksum,
     [int] $Cpus = 4,
     [int] $RamGB_HR = 2
 )
@@ -22,6 +23,7 @@ packer build  --force                       `
     --var "box_type=$BoxType"               `
     --var "cpus=$Cpus"                      `
     --var "ram=$ram_mb"                     `
+    --var "SHA512Checksum=$SHA512Checksum"  `
     ".\$BoxTemplate.json"
 
 # Win 10 Pro

@@ -5,3 +5,6 @@ node_modules
 tmp/
 coverage
 .nyc_output
+builds
+output-virtualbox-iso/
+packer_cache/

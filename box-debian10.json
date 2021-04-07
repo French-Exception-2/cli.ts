@@ -2,19 +2,20 @@
   "variables": {
     "cpus": "6",
     "ram_mb": "8192",
-    "os_version": "10.8.0",
+    "os_version": "10.9.0",
     "os_type": "Debian_64",
     "disk_size": "204800",
     "disk_size_hr": "200GB",
     "box_type": "dev-docker",
     "headless": "true",
-    "keyboard_layout" : "fr",
+    "keyboard_layout": "fr",
     "provider": "virtualbox",
-    "docker_ce_cli_version":"20.10.5~3-0",
+    "docker_ce_cli_version": "20.10.5~3-0",
     "containerd_version": "1.4.4-1",
     "docker_ce_version": "20.10.5~3-0",
     "docker_compose_version": "1.28.6",
-    "docker_bind_address": "0.0.0.0"
+    "docker_bind_address": "0.0.0.0",
+    "SHA512Checksum": "47d35187b4903e803209959434fb8b65ead3ad2a8f007eef1c3d3284f356ab9955aa7e15e24cb7af6a3859aa66837f5fa2e7441f936496ea447904f7dddfdc20  "
   },
   "builders": [
     {
@@ -46,7 +47,7 @@
         "debian-{{ user `os_version` }}-amd64-netinst.iso",
         "https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-{{ user `os_version` }}-amd64-netinst.iso"
       ],
-      "iso_checksum": "sha512:934336d266535c91fcd12cd122c81f8261721efa117fdcb9a31615caa96c5c5ce3454ed5f28f1b25a7b1b5f44631fdfa78a93adb6445e2e2caaf6455ab344cf8",
+      "iso_checksum": "sha512:{{ user `SHA512Checksum` }}",
       "ssh_username": "vagrant",
       "ssh_password": "vagrant",
       "ssh_port": 22,
@@ -68,108 +69,108 @@
           "--cpus",
           "{{ user `cpus` }}"
         ],
-      [
-        "modifyvm",
-        "{{.Name}}",
-        "--nicpromisc1",
-        "allow-all"
-      ],
-      [
-        "modifyvm",
-        "{{.Name}}",
-        "--nicpromisc2",
-        "allow-all"
-      ],
-      [
-        "modifyvm",
-        "{{.Name}}",
-        "--nicpromisc3",
-        "allow-all"
-      ],
-      [
-        "modifyvm",
-        "{{.Name}}",
-        "--natdnshostresolver1",
-        "on"
-      ],
-      [
-        "modifyvm",
-        "{{.Name}}",
-        "--natdnsproxy1",
-        "on"
-      ],
-      [
-        "modifyvm",
-        "{{.Name}}",
-        "--ioapic",
-        "on"
-      ],
-      [
-        "modifyvm",
-        "{{.Name}}",
-        "--hwvirtex",
-        "on"
-      ],
-      [
-        "modifyvm",
-        "{{.Name}}",
-        "--hpet",
-        "on"
-      ],
-      [
-        "modifyvm",
-        "{{.Name}}",
-        "--nestedpaging",
-        "on"
-      ],
-      [
-        "modifyvm",
-        "{{.Name}}",
-        "--largepages",
-        "on"
-      ],
-      [
-        "modifyvm",
-        "{{.Name}}",
-        "--vtxvpid",
-        "on"
-      ],
-      [
-        "modifyvm",
-        "{{.Name}}",
-        "--vtxux",
-        "on"
-      ],
-      [
-        "modifyvm",
-        "{{.Name}}",
-        "--pae",
-        "on"
-      ],
-      [
-        "modifyvm",
-        "{{.Name}}",
-        "--chipset",
-        "ich9"
-      ],
-      [
-        "modifyvm",
-        "{{.Name}}",
-        "--biosapic",
-        "x2apic"
-      ],
-      [
-        "modifyvm",
-        "{{.Name}}",
-        "--vram",
-        "8"
-      ],
-      [
-        "modifyvm",
-        "{{.Name}}",
-        "--accelerate3d",
-        "off"
-      ]
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--nicpromisc1",
+          "allow-all"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--nicpromisc2",
+          "allow-all"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--nicpromisc3",
+          "allow-all"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--natdnshostresolver1",
+          "on"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--natdnsproxy1",
+          "on"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--ioapic",
+          "on"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--hwvirtex",
+          "on"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--hpet",
+          "on"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--nestedpaging",
+          "on"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--largepages",
+          "on"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--vtxvpid",
+          "on"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--vtxux",
+          "on"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--pae",
+          "on"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--chipset",
+          "ich9"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--biosapic",
+          "x2apic"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--vram",
+          "8"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--accelerate3d",
+          "off"
+        ]
       ]
     }
   ],
@@ -178,14 +179,6 @@
       "type": "shell",
       "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
       "script": "./provisioning/{{ user `os_type` }}/{{ user `os_version` }}/apt.configure.sh"
-    },
-    {
-      "type": "shell",
-      "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
-      "script": "./provisioning/{{ user `os_type` }}/{{ user `os_version` }}/apt.proxy.configure.sh",
-      "environment_vars": [
-        "APT_IP_FILE=/vagrant/instance/IPv4/vdi-00-infra-00"
-      ]
     },
     {
       "type": "shell",
@@ -211,18 +204,10 @@
       "type": "shell",
       "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
       "script": "./provisioning/{{ user `os_type` }}/{{ user `os_version` }}/docker.install.sh",
-      "environment_vars":[
+      "environment_vars": [
         "docker_ce_cli_version={{user `docker_ce_cli_version`}}",
         "containerd_version={{user `containerd_version`}}",
         "docker_ce_version={{user `docker_ce_version`}}"
-      ]
-    },
-    {
-      "type": "shell",
-      "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
-      "script": "./provisioning/{{ user `os_type` }}/{{ user `os_version` }}/docker.configure.sh",
-      "environment_vars":[
-        "bind_address={{user `docker_bind_address`}}"
       ]
     },
     {
@@ -236,20 +221,17 @@
     {
       "type": "shell",
       "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
-      "script": "./provisioning/{{ user `os_type` }}/{{ user `os_version` }}/docker.host.configure.sh",
-      "environment_vars": [
-        "docker_compose_version={{user `docker_compose_version`}}"
-      ]
-    },
-    {
-      "type": "shell",
-      "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
       "script": "./provisioning/{{ user `os_type` }}/{{ user `os_version` }}/interfaces.configure.sh"
     },
     {
       "type": "shell",
       "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
       "script": "./provisioning/{{ user `os_type` }}/{{ user `os_version` }}/sysctl.configure.sh"
+    },
+    {
+      "type": "shell",
+      "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
+      "script": "./provisioning/{{ user `os_type` }}/{{ user `os_version` }}/k8s.install.sh"
     }
   ],
   "post-processors": [
@@ -262,7 +244,7 @@
       "checksum_types": [
         "sha256"
       ],
-      "output": "builds/{{.Provider}}-debian10-{{ user `os_version` }}-{{ user `box_type` }}-{{ user `disk_size_hr` }}{{.ChecksumType}}.checksum"
+      "output": "builds/{{ user `provider` }}-debian10-{{ user `os_version` }}-{{ user `box_type` }}-{{ user `disk_size_hr` }}{{.ChecksumType}}.checksum"
     }
   ]
 }
