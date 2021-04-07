@@ -1,0 +1,185 @@
+{
+  "variables": {
+    "autounattend": "./http/Autounattend.xml",
+    "cpus": "6",
+    "ram_mb": "8192",
+    "os_version": "10",
+    "os_type": "Windows",
+    "disk_size": "204800",
+    "disk_size_hr": "200GB",
+    "box_type": "dev",
+    "headless": "true",
+    "iso_url": "C:/code/bimandco/Windows.iso",
+    "iso_checksum": "E9FBB1C1D1953A5A0BF78DFDE7DFBE29F1B25F9A52158D8AD74E73EB24DD5B01",
+    "iso_checksum_type": "sha256",
+    "provider": "virtualbox"
+  },
+  "builders": [
+    {
+      "boot_wait": "2m",
+      "disk_size": "{{user `disk_size`}}",
+      "floppy_files": [
+        "{{user `autounattend`}}",
+        "./provisioning/Windows/10/fixnetwork.ps1",
+        "./provisioning/Windows/10/microsoft-updates.bat",
+        "./provisioning/Windows/10/win-updates.ps1",
+        "./provisioning/Windows/10/openssh.ps1"
+      ],
+      "guest_os_type": "Windows10_64",
+      "headless": "{{user `headless`}}",
+      "iso_checksum": "{{user `iso_checksum_type`}}:{{user `iso_checksum`}}",
+      "iso_url": "{{user `iso_url`}}",
+      "shutdown_command": "shutdown /s /t 10 /f /d p:4:1 /c \"Packer Shutdown\"",
+      "ssh_password": "vagrant",
+      "ssh_timeout": "2h",
+      "ssh_username": "vagrant",
+      "type": "virtualbox-iso",
+      "vm_name": "{{ user `provider` }}-win10pro-x64-{{ user `os_version` }}-{{ user `box_type` }}-{{ user `disk_size_hr` }}",
+      "vboxmanage": [
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--memory",
+          "{{ user `ram_mb` }}"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--cpus",
+          "{{ user `cpus` }}"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--nicpromisc1",
+          "allow-all"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--nicpromisc2",
+          "allow-all"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--nicpromisc3",
+          "allow-all"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--natdnshostresolver1",
+          "on"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--natdnsproxy1",
+          "on"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--ioapic",
+          "on"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--hwvirtex",
+          "on"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--hpet",
+          "on"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--nestedpaging",
+          "on"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--largepages",
+          "on"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--vtxvpid",
+          "on"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--vtxux",
+          "on"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--pae",
+          "on"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--chipset",
+          "ich9"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--biosapic",
+          "x2apic"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--vram",
+          "256"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--accelerate3d",
+          "on"
+        ]
+      ]
+    }
+  ],
+  "provisioners": [
+    {
+      "execute_command": "{{.Vars}} cmd /c C:/Windows/Temp/script.bat",
+      "remote_path": "/tmp/script.bat",
+      "scripts": [
+        "./provisioning/Windows/10/vm-guest-tools.bat",
+        "./provisioning/Windows/10/vagrant-ssh.bat",
+        "./provisioning/Windows/10/disable-auto-logon.bat",
+        "./provisioning/Windows/10/enable-rdp.bat",
+        "./provisioning/Windows/10/compile-dotnet-assemblies.bat",
+        "./provisioning/Windows/10/compact.bat"
+      ],
+      "type": "shell"
+    }
+  ],
+  "post-processors": [
+    {
+      "keep_input_artifact": false,
+      "output": "builds/{{.Provider}}-win10-{{ user `os_version` }}-{{ user `box_type` }}-{{ user `disk_size_hr` }}.box",
+      "type": "vagrant"
+    },
+    {
+      "type": "checksum",
+      "checksum_types": [
+        "sha256"
+      ],
+      "output": "builds/{{.Provider}}-win10-{{ user `os_version` }}-{{ user `box_type` }}-{{ user `disk_size_hr` }}{{.ChecksumType}}.checksum"
+    }
+  ]
+}
