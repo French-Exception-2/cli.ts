@@ -14,6 +14,8 @@ ENV["LC_ALL"] = "en_US.UTF-8"
   vagrant_config_local = JSON.parse(File.read(File.join(dir,"\\config-local.json")))
   vagrant_config = Vagrant::Util::DeepMerge.deep_merge(vagrant_config, vagrant_config_local)
 
+  vagrant_config = vagrant_config['$']
+  
 Vagrant.configure(VAGRANT_VERSION) do |config|
 # Global
 

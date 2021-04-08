@@ -231,6 +231,11 @@
     {
       "type": "shell",
       "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
+      "script": "./provisioning/{{ user `os_type` }}/{{ user `os_version` }}/services.networking.configure.sh"
+    },
+    {
+      "type": "shell",
+      "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
       "script": "./provisioning/{{ user `os_type` }}/{{ user `os_version` }}/k8s.install.sh"
     }
   ],
