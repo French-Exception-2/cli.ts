@@ -5,11 +5,44 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python : Docker Compose PS",
+            "type": "python",
+            "request": "launch",
+            "program": "C:\\Python39\\Scripts\\docker-compose-script.py",
+            "console": "integratedTerminal",
+            "args": ["ps"],
+            "cwd": "${workspaceFolder}/tmp",
+            "env": {"COMPOSE_PARAMIKO_SSH":"1"}
+        },
+        {
+            "name": "Python: Attacher",
+            "type": "python",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}",
+                    "remoteRoot": "."
+                }
+            ]
+        },
+        {
             "name": "Current TS File",
             "type": "node",
             "request": "launch",
-            "args": ["${relativeFile}"],
-            "runtimeArgs": ["--nolazy", "-r", "ts-node/register", "-r", "source-map-support/register"],
+            "args": [
+                "${relativeFile}"
+            ],
+            "runtimeArgs": [
+                "--nolazy",
+                "-r",
+                "ts-node/register",
+                "-r",
+                "source-map-support/register"
+            ],
             "sourceMaps": true,
             "cwd": "${workspaceRoot}",
             "protocol": "inspector",
@@ -23,7 +56,6 @@
             ],
             "type": "pwa-node"
         },
-        
         {
             "name": "vagrant:init --status --instance 1 --group \"Test\" --provider \"virtualbox\"",
             "program": "${workspaceFolder}/bin/frenchex2",
