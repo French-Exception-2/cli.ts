@@ -1,6 +1,6 @@
-#!/usr/bin/env bash
+#!/usr/bin/env pwsh
 
-bind_address=${bind_address:="0.0.0.0"}
+bind_address=${bind_address:=0.0.0.0}
 
 docker_systemd_config=$(cat <<EOF
 [Unit]
@@ -22,7 +22,7 @@ TimeoutSec=0
 RestartSec=2
 Restart=always
 
-# Note that StartLimit* options were moved from "Service" to "Unit" in systemd 229.
+# Note that StartLimit* options were moved from Service to Unit in systemd 229.
 # Both the old, and new location are accepted by systemd 229 and up, so using the old location
 # to make them work for either version of systemd.
 StartLimitBurst=3
@@ -53,19 +53,19 @@ WantedBy=multi-user.target
 EOF
 )
 
-echo "$docker_systemd_config" | sudo tee /lib/systemd/system/docker.service
+echo $docker_systemd_config | sudo tee /lib/systemd/system/docker.service
 
 sudo systemctl daemon-reload
 sudo systemctl restart docker
 
 config=$(cat <<EOF
 {
-    "host": "ssh://vagrant@$(hostname)",
-    "user": "vagrant"
+    host: ssh://vagrant@$(hostname),
+    user: vagrant
 }
 EOF
 )
 
 (mkdir /vagrant/instance/docker-hosts) || true
 
-echo "$config" | tee /vagrant/instance/docker-hosts/$(hostname).json
+echo $config | tee /vagrant/instance/docker-hosts/$(hostname).json

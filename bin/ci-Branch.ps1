@@ -1,7 +1,7 @@
 param(
-    [string] $Branch,
-    [string] $IntegrateRemote = "origin",
-    [string] $IntegrateRemoteBranch = "develop"
+    [parameter(Mandatory=$true)] [string] $Branch,
+    [parameter(Mandatory=$true)] [string] $IntegrateRemote = "origin",
+    [parameter(Mandatory=$true)] [string] $IntegrateRemoteBranch = "develop"
 )
 
 # Origin = origin = your cloned repository

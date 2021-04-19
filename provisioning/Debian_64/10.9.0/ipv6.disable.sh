@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env pwsh
 
 sudo /sbin/sysctl -w net.ipv6.conf.all.disable_ipv6=1
 
@@ -17,6 +17,5 @@ net.ipv6.conf.default.autoconf = 0
 EOF
 )
 
-echo "$content" | sudo tee -a /etc/sysctl.conf
-
+echo $content | sudo tee -a /etc/sysctl.conf
 sudo sysctl -p

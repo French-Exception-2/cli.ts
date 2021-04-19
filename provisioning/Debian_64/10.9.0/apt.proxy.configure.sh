@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env pwsh
 
 APT_PORT=${APT_PORT:=3142}
 
@@ -9,13 +9,10 @@ else
 fi
  
 content=$(cat <<EOF
-Acquire::http::Proxy "http://${ip}:${APT_PORT}/";
-Acquire::https::Proxy "none";
+Acquire::http::Proxy http://${ip}:${APT_PORT}/;
+Acquire::https::Proxy none;
 EOF
 )
 
-echo "$content" | sudo tee /etc/apt/apt.conf.d/proxy.conf
-
-echo "APT proxy configured with ’http://${ip}:${APT_PORT}/’"
-
-sudo apt-get update
+echo $content | sudo tee /etc/apt/apt.conf.d/proxy.conf
+echo APT

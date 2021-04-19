@@ -1,11 +1,148 @@
-(() => {
-  const opModule = require('./../../../operations/vagrant/machine-type/add');
+interface VagrantMachineTypeAddArgv {
+  name: string
+  vcpus: number
+  cpucap: number
+  "os-type": string
+  "os-version": string
+  "ram-mb": number
+  "vram-mb": number
+  "3d": boolean
+  logo: string
+  pagefusion: boolean
+  gui: boolean
+  provider: string
+  enabled: boolean
+  box: string
+  provisioning: Array<string>
+  path: string
+  files: Array<string>
+}
 
+(() => {
   exports.command = 'vagrant:machine-type:add';
   exports.desc = 'Add new Vagrant Machine Type';
-  exports.builder = opModule.builder;
+  exports.builder = ((processCwd) => {
+    const builder = {
+      name: {
+        type: "string",
+        required: true,
+        description: "Name of Type"
+      },
+      vcpus: {
+        type: "number",
+        required: true,
+        description: "Number of VCPUs"
+      },
+      cpucap: {
+        type: "number",
+        required: true,
+        description: "CPU Cap"
+      },
+      os_type: {
+        type: "string",
+        required: true,
+        description: "OS Type"
+      },
+      os_version: {
+        type: "string",
+        required: true,
+        description: "OS Version"
+      },
+      ram_mb: {
+        type: "number",
+        required: true,
+        description: "RAM in MB"
+      },
+      vram_mb: {
+        type: "number",
+        required: true,
+        description: "VRAM in MB"
+      },
+      "3d": {
+        type: "boolean",
+        required: true,
+        description: "3D"
+      },
+      logo: {
+        type: "string",
+        required: false,
+        description: "Logo image"
+      },
+      pagefusion: {
+        type: "boolean",
+        required: false,
+        description: "PageFusion",
+        default: true
+      },
+      gui: {
+        type: "boolean",
+        required: true,
+        default: false,
+        description: "GUI"
+      },
+      provider: {
+        type: "string",
+        required: true,
+        description: "VM Provider"
+      },
+      enabled: {
+        type: "boolean",
+        required: true,
+        description: "Enabled",
+        default: true
+      },
+      box: {
+        type: "string",
+        required: true,
+        description: "Box name"
+      },
+      provisioning: {
+        type: "array",
+        default: [],
+        description: "Provisioning"
+      },
+      path: {
+        type: "string",
+        default: processCwd
+      },
+      files: {
+        type: 'array',
+        default: []
+      }
+    };
+
+    return builder;
+  })(process.cwd());
   exports.handler = async function (argv: VagrantMachineTypeAddArgv) {
-    const op = opModule.handle;
-    await op(argv);
+    const path = require('path');
+    const fs = require('fs-extra');
+    const _json = require('./../../../Serialization.js');
+
+    const type = {
+      vcpus: argv.vcpus,
+      cpucap: argv.cpucap,
+      os_type: argv["os-type"],
+      os_version: argv["os-version"],
+      ram_mb: argv["ram-mb"],
+      vram_mb: argv["vram-mb"],
+      "3d": (argv['3d'] ? "on" : "off"),
+      bioslogoimage: argv.logo,
+      pagefusion: argv.pagefusion,
+      gui: argv.gui,
+      provider: argv.provider,
+      enabled: argv.enabled,
+      box: argv.box,
+      provisioning: []
+    };
+
+    const json_filepath = path.join(argv.path, 'config.json');
+    let json = JSON.parse(await fs.readFile(json_filepath));
+
+    if (!json['$']['nodes-types'])
+      json['$']['nodes-types'] = {};
+
+    json['$']['nodes-types'][argv.name] = type;
+
+    await fs.writeFile(json_filepath, _json.toJson(json));
   };
 })();

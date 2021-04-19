@@ -1,0 +1,22 @@
+{
+    "vagrant": {
+        "machines-types": {
+            "dev": {
+                "vcpus": 4,
+                "cpucap": 100,
+                "os_type": "Debian_64",
+                "os_version": "10.9.0",
+                "ram_mb": 2048,
+                "vram_mb": 8,
+                "3d": false,
+                "gui": false,
+                "provider": "virtualbox",
+                "enabled": true,
+                "box": "debian/contrib-buster64"
+            }
+        },
+        "provisioners": [
+            
+        ]
+    }
+}

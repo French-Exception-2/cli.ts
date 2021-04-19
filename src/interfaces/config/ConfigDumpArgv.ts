@@ -1,3 +1,0 @@
-interface ConfigDumpArgv {
-    raw:boolean
-}

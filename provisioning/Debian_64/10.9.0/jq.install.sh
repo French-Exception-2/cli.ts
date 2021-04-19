@@ -1,6 +1,6 @@
-#!/usr/bin/env bash
+#!/usr/bin/env pwsh
 
-VERSION=${VERSION:="1.6"}
+version=${version:=1.6}
 
-sudo wget https://github.com/stedolan/jq/releases/download/jq-${VERSION}/jq-linux64 -o /usr/bin/jq
+sudo wget https://github.com/stedolan/jq/releases/download/jq-${version}/jq-linux64 -o /usr/bin/jq
 sudo chmod +x /usr/bin/jq

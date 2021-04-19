@@ -1,11 +1,17 @@
-(async () => {
-  // const opModule = require('./../../../operations/vagrant/type/add');
+interface VagrantMachineTypeListArgv {
 
-  // exports.command = 'vagrant:machine-type:list';
-  // exports.desc = 'Vagrant list types of machines';
-  // exports.builder = opModule.builder;
-  // exports.handler = async function (argv: VagrantMachineTypeListArgv) {
-  //   const op = opModule.handle;
-  //   await op(argv);
-  // };
+}
+
+(async () => {
+  exports.command = 'vagrant:machine-type:list';
+  exports.desc = 'Vagrant list types of machines';
+  exports.builder = ((processCwd) => {
+    const builder = {
+
+    };
+
+    return builder;
+  })(process.cwd());
+  exports.handler = async function (argv: VagrantMachineTypeListArgv) {
+  };
 })();

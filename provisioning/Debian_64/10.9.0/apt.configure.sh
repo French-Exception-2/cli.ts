@@ -1,9 +1,9 @@
-#!/usr/bin/env bash
+#!/usr/bin/env pwsh
 
+apt_conf_file=${apt_conf_file:=/etc/apt/apt.conf.d/00no_recommends_no_suggest}
 apt_conf=$(cat <<EOF
-APT::Get::Install-Recommends "false";
-APT::Get::Install-Suggests "false";
+APT::Get::Install-Recommends false;
+APT::Get::Install-Suggests false;
 EOF
 )
-
-echo "$apt_conf" | sudo tee /etc/apt/apt.conf.d/00no_recommends_no_suggest
+echo `$apt_conf | sudo tee /etc/apt/apt.conf.d/00no_recommends_no_suggest 

@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env pwsh
 
 content=$(cat <<EOF
 zend_extension=xdebug.so
@@ -8,4 +8,4 @@ xdebug.start_with_request=true
 EOF
 )
 
-echo "$content" | tee /home/vagrant/.phpbrew/php/php-7.4.13/var/db/xdebug.ini
+echo $content | tee /home/vagrant/.phpbrew/php/php-7.4.13/var/db/xdebug.ini
