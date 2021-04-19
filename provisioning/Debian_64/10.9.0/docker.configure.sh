@@ -57,15 +57,3 @@ echo $docker_systemd_config | sudo tee /lib/systemd/system/docker.service
 
 sudo systemctl daemon-reload
 sudo systemctl restart docker
-
-config=$(cat <<EOF
-{
-    host: ssh://vagrant@$(hostname),
-    user: vagrant
-}
-EOF
-)
-
-(mkdir /vagrant/instance/docker-hosts) || true
-
-echo $config | tee /vagrant/instance/docker-hosts/$(hostname).json

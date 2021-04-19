@@ -1,46 +1,57 @@
 param(
-    [string]    $Path       = ""
+    [string] $Path
 )
 
 import-module "$PSScriptRoot/../posh_modules/Utils.psm1" -Force
 
-if ([string]::IsNullOrEmpty($Path)){
+if ([string]::IsNullOrEmpty($Path)) {
     $path = get-location
 }
 
+frenchex2 vagrant:init --instance "$Instance" --group "$group"
 
-$json = get-content "$PSScriptRoot/../init.json" -raw | convertfrom-json
+$json = get-content "$PSScriptRoot/../init.json" -raw -Encoding ascii | convertfrom-json
 
-frenchex2 vagrant:init --instance $Instance --group $group
+$machinesTypes = $json.vagrant.'machines-types'.psobject.Properties
 
-$json.vagrant."machines-types" | ForEach-Object {
-    write-host $_
-    write-host $json.vagrant."machines-types".$_
-
-    pause
-
-    frenchex2 vagrant:machine-type:add  `
-    --name $_.Name                      `
-    --vcpus $_.Vcpus                    `
-    --cpucap $_.CpuCap                  `
-    --os-type $_."os-type"              `
-    --os-version $_."os-version"        `
-    --ram-mb $_."ram-mb"                `
-    --vram-mb $_."vram-mb"              `
-    --3d $_."3d"                        `
-    --gui $_.gui                        `
-    --provider $_.Provider              `
-    --enabled $_.enabled                `
-    --box $_.box
+foreach($machineType in $machinesTypes) {
+    
+        frenchex2 vagrant:machine-type:add               `
+        --name $machineType.Name                    `
+        --vcpus $machineType.Value.Vcpus                 `
+        --cpucap $machineType.Value.cpucap               `
+        --os-type $machineType.Value.'os-type'          `
+        --os-version $machineType.Value.'os-version'        `
+        --ram-mb $machineType.Value.'ram-mb'           `
+        --vram-mb $machineType.Value.'vram-mb'          `
+        --no-3d                                          `
+        --no-gui                                         `
+        --provider $machineType.Value.provider       `
+        --enabled                                        `
+        --box $machineType.Value.box
 }
 
+foreach($provisioner in $json.vagrant.provisioners) {
+    $osName = $provisioner."os-name"
+    $osVersion = $provisioner."os-version"
 
+    $provisioners = get-childitem -path "./provisioning/${osName}/${osVersion}" -file
 
-# Machines Types
+    foreach($file in $provisioners){
+        write-host $file
+    }
+}
 
+# $files = get-childitem -Path $json.vagrant.provisioners -Recurse -File
 
+# foreach ($file in $files) {
 
-pause
+#     $filepath = Split-Path -path $file -parent
+
+#     $parent = split-path -Path $filepath -parent
+
+#     write-host $parent
+# }
 
 # APT-CACHERNG
 ExecuteWithCode @'
@@ -55,12 +66,12 @@ sync
 sudo systemctl daemon-reload
 sudo systemctl restart apt-cacher-ng
 '@ {
-    frenchex2 vagrant:provision:add     `
-    --name "apt.cacherng.install"       `
-    --os-type "Debian_64"               `
-    --os-version "10.9.0"               `
-    --is-bash                           `
-    --code ""$code""
+    frenchex2 vagrant:provision:add   `
+        --name "apt-cacherng.install" `
+        --os-type "Debian_64"         `
+        --os-version "10.9.0"         `
+        --is-bash                     `
+        --code "$code"
 }
 
 # APT CONFIGURE
@@ -71,21 +82,19 @@ APT::Get::Install-Recommends "false";
 APT::Get::Install-Suggests "false";
 EOF
 )
-echo "`$apt_conf" | sudo tee /etc/apt/apt.conf.d/00no_recommends_no_suggest 
+echo \"$apt_conf\" | sudo tee /etc/apt/apt.conf.d/00no_recommends_no_suggest 
 '@ {
-    frenchex2 vagrant:provision:add    `
-    --name "apt.configure"                          `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code ""$code""
+    frenchex2 vagrant:provision:add `
+        --name "apt.configure"      `
+        --os-type "Debian_64"       `
+        --os-version "10.9.0"       `
+        --is-bash                   `
+        --code "$code"
 }
 
 
 # APT DIST UPGRADE
 ExecuteWithCode @'
-#!/usr/bin/env bash
-
 sudo apt-get update
 sudo DEBIAN_FRONTEND=noninteractive apt-get -fy \
     -o Dpkg::Options::="--force-confdef"        \
@@ -93,11 +102,11 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get -fy \
     dist-upgrade
 '@ {
     frenchex2 vagrant:provision:add `
-    --name "apt.dist-upgrade"                    `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code ""$code""
+        --name "apt.dist-upgrade"   `
+        --os-type "Debian_64"       `
+        --os-version "10.9.0"       `
+        --is-bash                   `
+        --code "$code"
 }
 
 
@@ -118,74 +127,72 @@ EOF
 )
 
 echo "$content" | sudo tee /etc/apt/apt.conf.d/proxy.conf
-echo "APT proxy configured with ’http://${ip}:${APT_PORT}/’"
+echo \"APT proxy configured with ’http://${ip}:${APT_PORT}/’\"
 sudo apt-get update
 '@ {
-    frenchex2 vagrant:provision:add    `
-    --name "apt.proxy.configure"                    `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code ""$code""
+    frenchex2 vagrant:provision:add  `
+        --name "apt.proxy.configure" `
+        --os-type "Debian_64"        `
+        --os-version "10.9.0"        `
+        --is-bash                    `
+        --code "$code"
 }
-
 
 # APT PROXY UNCONFIGURE
 ExecuteWithCode @'
-echo "" | sudo tee /etc/apt/apt.conf.d/proxy.conf
+echo \"\" | sudo tee /etc/apt/apt.conf.d/proxy.conf
 '@ {
     frenchex2 vagrant:provision:add    `
-    --name "apt.proxy.unconfigure"                  `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code "$code"
+        --name "apt.proxy.unconfigure" `
+        --os-type "Debian_64"          `
+        --os-version "10.9.0"          `
+        --is-bash                      `
+        --code "$code"
 }
-
 
 # APT UPDATE
 ExecuteWithCode @'
-sudo apt-get update 
+sudo apt-get update
 '@ {
     frenchex2 vagrant:provision:add `
-    --name "apt.update"                          `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code "$code"
+        --name "apt.update"         `
+        --os-type "Debian_64"       `
+        --os-version "10.9.0"       `
+        --is-bash                   `
+        --code "$code"
 }
 
 # APT UPGRADE
 ExecuteWithCode @'
 sudo apt-get upgrade -y -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold
 '@ {
-    frenchex2 vagrant:provision:add    `
-    --name "apt.upgrade"                            `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code "$code"
+    frenchex2 vagrant:provision:add `
+        --name "apt.upgrade"        `
+        --os-type "Debian_64"       `
+        --os-version "10.9.0"       `
+        --is-bash                   `
+        --code "$code"
 }
 
 # INFOS
 ExecuteWithCode @'
-device=${device:="eth1"}
-ip=$(ip addr show $device | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
-(mkdir -p /vagrant/instance/IPv4/) || true
-echo "$ip" | tee /vagrant/instance/IPv4/$(hostname)
+info_dir=${info_dir:=/vagrant/instance/IPv4/}
+device=${device:=eth1}
+ip=$(ip addr show $device | grep inet\b | awk '{print $2}' | cut -d/ -f1)
+(mkdir -p $info_dir) || true
+echo $ip | tee /vagrant/instance/IPv4/$(hostname)
 '@ {
-    frenchex2 vagrant:provision:add    `
-    --name "infos"                                  `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code "$code"
+    frenchex2 vagrant:provision:add `
+        --name "infos"              `
+        --os-type "Debian_64"       `
+        --os-version "10.9.0"       `
+        --is-bash                   `
+        --code "$code"
 }
 
 
 # CLEAN INSTALL
 ExecuteWithCode @'
-
 # Credits to:
 #  - http://vstone.eu/reducing-vagrant-box-size/
 #  - https://github.com/mitchellh/vagrant/issues/343
@@ -244,12 +251,12 @@ dd if=/dev/zero of=$swappart;
 mkswap $swappart;
 swapon $swappart;
 '@ {
-    frenchex2 vagrant:provision:add    `
-    --name "clean1"                                 `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code "$code"
+    frenchex2 vagrant:provision:add `
+        --name "clean1"             `
+        --os-type "Debian_64"       `
+        --os-version "10.9.0"       `
+        --is-bash                   `
+        --code "$code"
 }
 
 
@@ -290,48 +297,48 @@ rm -f /home/vagrant/.bash_history
 sync
 
 '@ {
-    frenchex2 vagrant:provision:add    `
-    --name "clean2"                                 `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code "$code"
+    frenchex2 vagrant:provision:add `
+        --name "clean2"             `
+        --os-type "Debian_64"       `
+        --os-version "10.9.0"       `
+        --is-bash                   `
+        --code "$code"
 }
 
 # DNS RESOLVER CONFIGURE
 ExecuteWithCode @'
-echo "nameserver ${nameserver}" | sudo tee /etc/resolv.conf
+echo \"nameserver ${nameserver}\" | sudo tee /etc/resolv.conf
 '@ {
-    frenchex2 vagrant:provision:add    `
-    --name "dns.resolver.configure"                 `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code "$code"
+    frenchex2 vagrant:provision:add     `
+        --name "dns.resolver.configure" `
+        --os-type "Debian_64"           `
+        --os-version "10.9.0"           `
+        --is-bash                       `
+        --code "$code"
 }
 
 # DOCKER CLI CONFIGURE
 ExecuteWithCode @'
-contexts=/vagrant/instance/docker-hosts/*.json
+content_dir=${context_dir:=/vagrant/instance/docker-hosts}
+contexts=$content_dir/*.json
 
 for f in $contexts
 do
-    echo "Processing $f"
+    echo \"Processing $f\"
     config_hostname=$(basename $f .json)
     echo "$config_hostname"
     host=$(jq -r '.host' $f)
     echo "$host"
 
-    docker context create "docker-$config_hostname" \
-        --docker host=$host
+    docker context create "docker-$config_hostname" --docker host=$host
 done
 '@ {
-    frenchex2 vagrant:provision:add    `
-    --name "docker-cli.configure"                   `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code "$code"
+    frenchex2 vagrant:provision:add   `
+        --name "docker-cli.configure" `
+        --os-type "Debian_64"         `
+        --os-version "10.9.0"         `
+        --is-bash                     `
+        --code "$code"
 }
 
 # DOCKER CLI INSTALL
@@ -342,12 +349,12 @@ sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debi
 sudo apt-get update
 sudo apt-get -y install docker-ce-cli
 '@ {
-    frenchex2 vagrant:provision:add    `
-    --name "docker-cli.install"                     `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code "$code"
+    frenchex2 vagrant:provision:add `
+        --name "docker-cli.install" `
+        --os-type "Debian_64"       `
+        --os-version "10.9.0"       `
+        --is-bash                   `
+        --code "$code"
 }
 
 # DOCKER COMPOSE INSTALL
@@ -360,22 +367,22 @@ vagrant_cache_dir=${vagrant_cache_dir:="/vagrant/.vagrant/cache"}
 docker_compose_version=${docker_compose_version:="1.28.6"}
 
 if [[ ! -e $vagrant_cache_dir/docker-compose_${docker_compose_version} ]]; then
-  sudo curl -L "https://github.com/docker/compose/releases/download/${docker_compose_version}/docker-compose-$(uname -s)-$(uname -m)" -o $vagrant_cache_dir/docker-compose_${docker_compose_version}
+  sudo curl -L \"https://github.com/docker/compose/releases/download/${docker_compose_version}/docker-compose-$(uname -s)-$(uname -m)\" -o $vagrant_cache_dir/docker-compose_${docker_compose_version}
 fi
 
 if [[ ! -e $vagrant_cache_dir/docker-compose_compl_${docker_compose_version} ]]; then
-  sudo curl -L "https://raw.githubusercontent.com/docker/compose/${docker_compose_version}/contrib/completion/bash/docker-compose" -o $vagrant_cache_dir/docker-compose_compl_${docker_compose_version}
+  sudo curl -L \"https://raw.githubusercontent.com/docker/compose/${docker_compose_version}/contrib/completion/bash/docker-compose\" -o $vagrant_cache_dir/docker-compose_compl_${docker_compose_version}
 fi
 
 sudo cp $vagrant_cache_dir/docker-compose_${docker_compose_version} /usr/bin/docker-compose
 sudo chmod +x /usr/bin/docker-compose
 '@ {
-    frenchex2 vagrant:provision:add    `
-    --name "docker-compose.install"                 `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code "$code"
+    frenchex2 vagrant:provision:add     `
+        --name "docker-compose.install" `
+        --os-type "Debian_64"           `
+        --os-version "10.9.0"           `
+        --is-bash                       `
+        --code "$code"
 }
 
 # DOCKER CONFIGURE
@@ -437,25 +444,13 @@ echo "$docker_systemd_config" | sudo tee /lib/systemd/system/docker.service
 
 sudo systemctl daemon-reload
 sudo systemctl restart docker
-
-config=$(cat <<EOF
-{
-    "host": "ssh://vagrant@$(hostname)",
-    "user": "vagrant"
-}
-EOF
-)
-
-(mkdir /vagrant/instance/docker-hosts) || true
-
-echo "$config" | tee /vagrant/instance/docker-hosts/$(hostname).json
 '@ {
-    frenchex2 vagrant:provision:add    `
-    --name "docker.configure"                       `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code "$code"
+    frenchex2 vagrant:provision:add `
+        --name "docker.configure"   `
+        --os-type "Debian_64"       `
+        --os-version "10.9.0"       `
+        --is-bash                   `
+        --code "$code"
 }
 
 # DOCKER CONTEXT REMOVE ALL
@@ -467,12 +462,12 @@ do
     docker context rm $context -f
 done
 '@ {
-    frenchex2 vagrant:provision:add    `
-    --name "docker.contexts.remove.all"             `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code "$code"
+    frenchex2 vagrant:provision:add         `
+        --name "docker.contexts.remove.all" `
+        --os-type "Debian_64"               `
+        --os-version "10.9.0"               `
+        --is-bash                           `
+        --code "$code"
 }
 
 # DOCKER HOST CONFIGURE
@@ -481,11 +476,11 @@ vm_max_map_count=${vm_max_map_count:="262144"}
 sudo sysctl -w vm.max_map_count=$vm_max_map_count
 '@ {
     frenchex2 vagrant:provision:add    `
-    --name "docker-host.configure"                  `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code "$code"
+        --name "docker-host.configure" `
+        --os-type "Debian_64"          `
+        --os-version "10.9.0"          `
+        --is-bash                      `
+        --code "$code"
 }
 
 # DOCKER INSTALL
@@ -493,8 +488,8 @@ ExecuteWithCode @'
 sudo apt-get install -y curl gdebi-core
 
 debian_id=${debian_id:=$(lsb_release -is | tr '[:upper:]' '[:lower:]')}
-debian_realcodename="${debian_code_name:=$(lsb_release -cs | tr '[:upper:]' '[:lower:]')}"
-#debian_codename="${debian_realcodename}"
+debian_realcodename=\"${debian_code_name:=$(lsb_release -cs | tr '[:upper:]' '[:lower:]')}\"
+#debian_codename=\"${debian_realcodename}\"
 realarch=$(dpkg --print-architecture)
 docker_ce_cli_version=${docker_ce_cli_version:="20.10.5~3-0"}
 docker_ce_cli_deb="docker-ce-cli_${docker_ce_cli_version}~${debian_id}-${debian_realcodename}_${realarch}.deb"
@@ -546,12 +541,12 @@ echo "$content" | sudo tee /etc/docker/daemon.json
 
 sudo systemctl restart docker
 '@ {
-    frenchex2 vagrant:provision:add    `
-    --name "docker.install"                         `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code "$code"
+    frenchex2 vagrant:provision:add `
+        --name "docker.install"     `
+        --os-type "Debian_64"       `
+        --os-version "10.9.0"       `
+        --is-bash                   `
+        --code "$code"
 }
 
 # GITLAB CLI INSTALL
@@ -559,12 +554,12 @@ ExecuteWithCode @'
 eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
 brew install glab
 '@ {
-    frenchex2 vagrant:provision:add    `
-    --name "gitlab-cli.install"                     `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code "$code"
+    frenchex2 vagrant:provision:add `
+        --name "gitlab-cli.install" `
+        --os-type "Debian_64"       `
+        --os-version "10.9.0"       `
+        --is-bash                   `
+        --code "$code"
 }
 
 # GITLAB CLI REGISTER TOKEN
@@ -575,24 +570,24 @@ GITLAB_PRIVATE_TOKEN=$(jq -r '.user.gitlab_private_token' /home/vagrant/config.j
 
 (glab auth login --hostname $GITLAB_HOSTNAME --token $GITLAB_PRIVATE_TOKEN) || true
 '@ {
-    frenchex2 vagrant:provision:add    `
-    --name "gitlab-cli.token.register"              `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code "$code"
+    frenchex2 vagrant:provision:add        `
+        --name "gitlab-cli.token.register" `
+        --os-type "Debian_64"              `
+        --os-version "10.9.0"              `
+        --is-bash                          `
+        --code "$code"
 }
 
 # GITLAB SSH KEYSCAN
 ExecuteWithCode @'
-ssh-keyscan gitlab.com
+ssh-keyscan gitlab.com -y
 '@ {
-    frenchex2 vagrant:provision:add    `
-    --name "gitlab.ssh.keyscan"                     `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code "$code"
+    frenchex2 vagrant:provision:add `
+        --name "gitlab.ssh.keyscan" `
+        --os-type "Debian_64"       `
+        --os-version "10.9.0"       `
+        --is-bash                   `
+        --code "$code"
 }
 
 # HELM INSTALL
@@ -606,46 +601,46 @@ tar -zxvf helm.$version.tar.gz
 mv linux-adm64/helm /usr/local/bin/helm
 chmod +x /usr/local/bin/helm
 '@ {
-    frenchex2 vagrant:provision:add    `
-    --name "helm.install"                           `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code "$code"
+    frenchex2 vagrant:provision:add `
+        --name "helm.install"       `
+        --os-type "Debian_64"       `
+        --os-version "10.9.0"       `
+        --is-bash                   `
+        --code "$code"
 }
 
 # HOMEBREW INSTALL
 ExecuteWithCode @'
 sudo apt-get install -y curl
 
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+/bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\"
 echo 'eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)' | tee /home/vagrant/.profile
 '@ {
-    frenchex2 vagrant:provision:add    `
-    --name "homebrew.install"                       `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code "$code"
+    frenchex2 vagrant:provision:add `
+        --name "homebrew.install"   `
+        --os-type "Debian_64"       `
+        --os-version "10.9.0"       `
+        --is-bash                   `
+        --code "$code"
 }
 
 # INTERFACES CONFIGURE
 ExecuteWithCode @'
 echo "TimeoutStartSec=5" | sudo tee -a /etc/systemd/system/network-online.target.wants/networking.service 
 '@ {
-    frenchex2 vagrant:provision:add    `
-    --name "interfaces.configure"                   `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code "$code"
+    frenchex2 vagrant:provision:add   `
+        --name "interfaces.configure" `
+        --os-type "Debian_64"         `
+        --os-version "10.9.0"         `
+        --is-bash                     `
+        --code "$code"
 }
 
 ## IPV6 DISABLE
-ExecuteWithCode @"
+ExecuteWithCode @'
 sudo /sbin/sysctl -w net.ipv6.conf.all.disable_ipv6=1
 
-content=`$(cat <<EOF
+content=$(cat <<EOF
 # désactivation de ipv6 pour toutes les interfaces
 net.ipv6.conf.all.disable_ipv6 = 1
 
@@ -660,17 +655,16 @@ net.ipv6.conf.default.autoconf = 0
 EOF
 )
 
-echo "`$content" | sudo tee -a /etc/sysctl.conf
+echo \"$content\" | sudo tee -a /etc/sysctl.conf
 sudo sysctl -p
-"@ {
+'@ {
     frenchex2 vagrant:provision:add `
-    --name "ipv6.disable"                        `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code "$code"
+        --name "ipv6.disable"       `
+        --os-type "Debian_64"       `
+        --os-version "10.9.0"       `
+        --is-bash                   `
+        --code "$code"
 }
-
 
 # JQ INSTALL
 ExecuteWithCode @'
@@ -679,49 +673,48 @@ version=${version:="1.6"}
 sudo wget https://github.com/stedolan/jq/releases/download/jq-${version}/jq-linux64 -o /usr/bin/jq
 sudo chmod +x /usr/bin/jq
 '@ {
-    frenchex2 vagrant:provision:add    `
-    --name "jq.install"                             `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code "$code"
+    frenchex2 vagrant:provision:add `
+        --name "jq.install"         `
+        --os-type "Debian_64"       `
+        --os-version "10.9.0"       `
+        --is-bash                   `
+        --code "$code"
 }
 
+# # K8S CLI CONFIGURE
+# ExecuteWithCode @'
+# contexts=/vagrant/instance/kubernetes-hosts/*.json
 
-# K8S CLI CONFIGURE
-ExecuteWithCode @'
-contexts=/vagrant/instance/kubernetes-hosts/*.json
-
-for f in $contexts
-do
-    echo "Processing $f"
-    config_hostname=$(basename $f .json)
-    echo "$config_hostname"
-    config_file=$(jq -r '.config' $f)
-    docker_host=$(jq -r '.host' "/vagrant/instance/docker-hosts/${config_hostname}.json")
+# for f in $contexts
+# do
+#     echo \"Processing $f\"
+#     config_hostname=$(basename $f .json)
+#     echo "$config_hostname"
+#     config_file=$(jq -r '.config' $f)
+#     docker_host=$(jq -r '.host' "/vagrant/instance/docker-hosts/${config_hostname}.json")
    
-    docker context create "k8s-${config_hostname}" \
-    --default-stack-orchestrator=kubernetes \
-    --kubernetes config-file=$config_file \
-    --docker host=$docker_host
+#     docker context create "k8s-${config_hostname}" \
+#     --default-stack-orchestrator=kubernetes \
+#     --kubernetes config-file=$config_file \
+#     --docker host=$docker_host
 
-    docker context use "k8s-${config_hostname}"
-done
-'@ {
-    frenchex2 vagrant:provision:add    `
-    --name "k8s-cli.configure"                      `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code "$code"
-}
+#     docker context use "k8s-${config_hostname}"
+# done
+# '@ {
+#     frenchex2 vagrant:provision:add `
+#         --name "k8s-cli.configure"  `
+#         --os-type "Debian_64"       `
+#         --os-version "10.9.0"       `
+#         --is-bash                   `
+#         --code "$code"
+# }
 
 # K8S CONFIGURE
 ExecuteWithCode @'
 sudo swapoff -a
 
 if [[ $MASTER == $(hostname) ]]; then
-    echo "Running as PRIMARY MASTER"
+    echo \"Running as PRIMARY MASTER\"
     sudo ufw allow 6443/tcp
     sudo ufw allow 2379:2380/tcp
     sudo ufw allow 10250/tcp
@@ -744,21 +737,13 @@ if [[ $MASTER == $(hostname) ]]; then
     cat /vagrant/instance/k8s.join.command.create.sh
     chmod +x /vagrant/instance/k8s.join.command.create.sh
     sudo cp -f /var/lib/kubelet/pki/kubelet-client-current.pem /vagrant/instance/kubelet-client-current.pem
-    (mkdir /vagrant/instance/kubernetes-hosts) || true
-    config=$(cat <<EOF
-{
-    "config": "/vagrant/instance/k8s.conf"
-}    
-EOF
-)
-    echo "$config" | tee /vagrant/instance/kubernetes-hosts/$(hostname).json
 else
-    ROLE=${ROLE:="master"}
+    ROLE=${ROLE:=\"master\"}
 
-    if [[ $ROLE == "master" ]]; then 
-        echo "Running as (secondary) MASTER"
+    if [[ $ROLE == \"master\" ]]; then 
+        echo \"Running as (secondary) MASTER\"
     else
-        echo "Running as WORKER"
+        echo \"Running as WORKER\"
     fi
 
     sudo ufw allow 10250/tcp
@@ -777,14 +762,13 @@ fi
 
 kubectl cluster-info
 '@ {
-    frenchex2 vagrant:provision:add    `
-    --name "k8s.configure"                          `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code "$code"
+    frenchex2 vagrant:provision:add `
+        --name "k8s.configure"      `
+        --os-type "Debian_64"       `
+        --os-version "10.9.0"       `
+        --is-bash                   `
+        --code "$code"
 }
-
 
 # K8S INSTALL
 ExecuteWithCode @'
@@ -796,7 +780,7 @@ sudo sysctl --system
 
 sudo apt-get -y install apt-transport-https gnupg2 curl 
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add - 
-echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list 
+echo \"deb http://apt.kubernetes.io/ kubernetes-xenial main\" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list 
 sudo apt-get update
 
 
@@ -813,19 +797,19 @@ sudo apt-get install -y ufw
 sudo ufw status
 sudo ufw enable
 '@ {
-    frenchex2 vagrant:provision:add    `
-    --name "k8s.install"                            `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code "$code"
+    frenchex2 vagrant:provision:add `
+        --name "k8s.install"        `
+        --os-type "Debian_64"       `
+        --os-version "10.9.0"       `
+        --is-bash                   `
+        --code "$code"
 }
 
 # KERNEL UPDATE
 ExecuteWithCode @'
 kernel_version=${kernel_version:=5.9.0-0.bpo.5}
 
-echo "deb http://deb.debian.org/debian buster-backports main contrib non-free" | sudo tee /etc/apt/sources.list.d/buster-backport.list
+echo \"deb http://deb.debian.org/debian buster-backports main contrib non-free\" | sudo tee /etc/apt/sources.list.d/buster-backport.list
 sudo apt-get update
 
 sudo apt-get install -y linux-image-${kernel_version}-amd64 linux-headers-${kernel_version}-amd64
@@ -833,55 +817,55 @@ sudo apt install -y byobu
 
 sudo purge-old-kernels --keep 1
 '@ {
-    frenchex2 vagrant:provision:add    `
-    --name "kernel.update"                          `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code "$code"
+    frenchex2 vagrant:provision:add `
+        --name "kernel.update"      `
+        --os-type "Debian_64"       `
+        --os-version "10.9.0"       `
+        --is-bash                   `
+        --code "$code"
 }
 
 # KEYBOARD LAYOUT CONFIGURE
 ExecuteWithCode @'
-keyboard_layout=${keyboard_layout:="us"}
+keyboard_layout=${keyboard_layout:=\"us\"}
 
 content=$(cat <<EOF
-XKBMODEL="pc105"
-XKBLAYOUT="$keyboard_layout"
-XKBVARIANT=""
-XKBOPTIONS="grp:alt_shift_toggle"
+XKBMODEL=\"pc105\"
+XKBLAYOUT=\"$keyboard_layout\"
+XKBVARIANT=\"\"
+XKBOPTIONS=\"grp:alt_shift_toggle\"
 
-BACKSPACE="guess"
+BACKSPACE=\"guess\"
 EOF
 )
 
-echo "$content" | sudo tee /etc/default/keyboard
+echo \"$content\" | sudo tee /etc/default/keyboard
 '@ {
-    frenchex2 vagrant:provision:add    `
-    --name "keyboard.layout.configure"              `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code "$code"
+    frenchex2 vagrant:provision:add        `
+        --name "keyboard.layout.configure" `
+        --os-type "Debian_64"              `
+        --os-version "10.9.0"              `
+        --is-bash                          `
+        --code "$code"
 }
 
 # MYSQL INSTALL
 ExecuteWithCode @'
-sudo DEBIAN_FRONTEND=noninteractive apt-get -fy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install debconf-utils 
-sudo debconf-set-selections <<< "mysql-server mysql-server/root_password password root"
-sudo debconf-set-selections <<< "mysql-server mysql-server/root_password_again password root"
-sudo DEBIAN_FRONTEND=noninteractive apt-get -fy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install default-mysql-server
+sudo DEBIAN_FRONTEND=noninteractive apt-get -fy -o Dpkg::Options::=\"--force-confdef\" -o Dpkg::Options::=\"--force-confold\" install debconf-utils
+sudo debconf-set-selections <<< \"mysql-server mysql-server/root_password password root\"
+sudo debconf-set-selections <<< \"mysql-server mysql-server/root_password_again password root\"
+sudo DEBIAN_FRONTEND=noninteractive apt-get -fy -o Dpkg::Options::=\"--force-confdef\" -o Dpkg::Options::=\"--force-confold\" install default-mysql-server
 
-sudo mysql -uroot -proot -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('root');"
+sudo mysql -uroot -proot -e \"SET PASSWORD FOR 'root'@'localhost' = PASSWORD('root');\"
 
-sudo mysql -uroot -proot -e "FLUSH PRIVILEGES;"
+sudo mysql -uroot -proot -e \"FLUSH PRIVILEGES;\"
 '@ {
-    frenchex2 vagrant:provision:add    `
-    --name "mysql.install"                          `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code "$code"
+    frenchex2 vagrant:provision:add `
+        --name "mysql.install"      `
+        --os-type "Debian_64"       `
+        --os-version "10.9.0"       `
+        --is-bash                   `
+        --code "$code"
 }
 
 # NVM INSTALL
@@ -889,28 +873,29 @@ ExecuteWithCode @'
 sudo apt install curl 
 curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+export NVM_DIR=\"$HOME/.nvm\"
+[ -s \"$NVM_DIR/nvm.sh\" ] && \. \"$NVM_DIR/nvm.sh\"  # This loads nvm
+[ -s \"$NVM_DIR/bash_completion\" ] && \. \"$NVM_DIR/bash_completion\"  # This loads nvm bash_completion
 
-nvm install 15.11
-nvm use 15.11
+node_version=${node_version:=\"15.11\"}
+nvm install $node_version
+nvm use $node_version
 '@ {
-    frenchex2 vagrant:provision:add    `
-    --name "nvm.install"                            `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code "$code"
+    frenchex2 vagrant:provision:add `
+        --name "nvm.install"        `
+        --os-type "Debian_64"       `
+        --os-version "10.9.0"       `
+        --is-bash                   `
+        --code "$code"
 }
 
 # PHP COMPOSER INSTALL
 ExecuteWithCode @'
-EXPECTED_CHECKSUM="$(wget -q -O - https://composer.github.io/installer.sig)"
-php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-ACTUAL_CHECKSUM="$(php -r "echo hash_file('sha384', 'composer-setup.php');")"
+EXPECTED_CHECKSUM=\"$(wget -q -O - https://composer.github.io/installer.sig)\"
+php -r \"copy('https://getcomposer.org/installer', 'composer-setup.php');\"
+ACTUAL_CHECKSUM=\"$(php -r \"echo hash_file('sha384', 'composer-setup.php');\")\"
 
-if [ "$EXPECTED_CHECKSUM" != "$ACTUAL_CHECKSUM" ]
+if [ \"$EXPECTED_CHECKSUM\" != \"$ACTUAL_CHECKSUM\" ]
 then
     >&2 echo 'ERROR: Invalid installer checksum'
     rm composer-setup.php
@@ -923,27 +908,33 @@ rm composer-setup.php
 sudo mv composer.phar /usr/local/bin/composer
 exit $RESULT
 '@ {
-    frenchex2 vagrant:provision:add    `
-    --name "php.composer.install"                   `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code "$code"
+    frenchex2 vagrant:provision:add   `
+        --name "php.composer.install" `
+        --os-type "Debian_64"         `
+        --os-version "10.9.0"         `
+        --is-bash                     `
+        --code "$code"
 }
 
 # PHP INSTALL
 ExecuteWithCode @'
 # phpbrew needs a valid php install > 7.1
-PHP_VERSION=${PHP_VERSION:="7.4"}
+PHP_VERSION=${PHP_VERSION:=\"7.4\"}
 
 sudo apt-get update
 
 sudo apt -y install lsb-release apt-transport-https ca-certificates unzip
 sudo wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
-echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/php.list
+echo \"deb https://packages.sury.org/php/ $(lsb_release -sc) main\" | sudo tee /etc/apt/sources.list.d/php.list
 sudo apt update
 
-sudo apt -y install php${PHP_VERSION} php${PHP_VERSION}-gd php${PHP_VERSION}-mysql php${PHP_VERSION}-xdebug php${PHP_VERSION}-dom php${PHP_VERSION}-mbstring php${PHP_VERSION}-zip
+sudo apt -y install php${PHP_VERSION}   \
+            php${PHP_VERSION}-gd        \
+            php${PHP_VERSION}-mysql     \
+            php${PHP_VERSION}-xdebug    \
+            php${PHP_VERSION}-dom       \
+            php${PHP_VERSION}-mbstring  \
+            php${PHP_VERSION}-zip
 
 content_xdebugv3=$(cat <<EOF
 zend_extension=xdebug.so
@@ -953,22 +944,22 @@ xdebug.start_with_request=yes
 EOF
 )
 
-echo "$content_xdebugv3" | sudo tee /etc/php/$PHP_VERSION/cli/conf.d/20-xdebug.ini 
+echo \"$content_xdebugv3\" | sudo tee /etc/php/$PHP_VERSION/cli/conf.d/20-xdebug.ini 
 (sudo systemctl stop apache2 && sudo a2dissite 000-default && sudo systemctl disable apache2) || true
 '@ {
-    frenchex2 vagrant:provision:add    `
-    --name "php.install"                            `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code "$code"
+    frenchex2 vagrant:provision:add `
+        --name "php.install"        `
+        --os-type "Debian_64"       `
+        --os-version "10.9.0"       `
+        --is-bash                   `
+        --code "$code"
 }
 
 # PHP XDEBUG DISABLE
 ExecuteWithCode @'
 source /home/vagrant/.phpbrew/bashrc
 
-php_ver_full=${php_ver_full:="7.3.25"}
+php_ver_full=${php_ver_full:=\"7.3.25\"}
 
 content=$(cat <<EOF
 zend_extension=xdebug.so
@@ -978,14 +969,14 @@ xdebug.start_with_request=false
 EOF
 )
 
-echo "$content" | tee /home/vagrant/.phpbrew/php/php-${php_ver_full}/var/db/xdebug.ini
+echo \"$content\" | tee /home/vagrant/.phpbrew/php/php-${php_ver_full}/var/db/xdebug.ini
 '@ {
-    frenchex2 vagrant:provision:add    `
-    --name "php.xdebug.disable"                     `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code "$code"
+    frenchex2 vagrant:provision:add `
+        --name "php.xdebug.disable" `
+        --os-type "Debian_64"       `
+        --os-version "10.9.0"       `
+        --is-bash                   `
+        --code "$code"
 }
 
 # PHP XDEBUG ENABLE
@@ -998,36 +989,36 @@ xdebug.start_with_request=true
 EOF
 )
 
-echo "$content" | tee /home/vagrant/.phpbrew/php/php-7.4.13/var/db/xdebug.ini
+echo \"$content\" | tee /home/vagrant/.phpbrew/php/php-7.4.13/var/db/xdebug.ini
 '@ {
-    frenchex2 vagrant:provision:add    `
-    --name "php.xdebug.enable"                      `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code "$code"
+    frenchex2 vagrant:provision:add `
+        --name "php.xdebug.enable"  `
+        --os-type "Debian_64"       `
+        --os-version "10.9.0"       `
+        --is-bash                   `
+        --code "$code"
 }
 
 # PHPBREW INSTALL
 ExecuteWithCode @'
 # phpbrew needs a valid php install > 7.1
-php_ver_full=${php_ver_full:="7.3.25"}
+php_ver_full=${php_ver_full:=\"7.3.25\"}
 
 sudo apt-get update
 
-sudo apt-get install -y \
-      procps \
-      unzip \
-      curl \
-      libicu-dev \
-      zlib1g-dev \
-      libxml2 \
-      libxml2-dev \
-      libreadline-dev \
-      libzip-dev \
-      libfreetype6-dev \
-      libjpeg62-turbo-dev \
-      libpng-dev \
+sudo apt-get install -y         \
+      procps                    \
+      unzip                     \
+      curl                      \
+      libicu-dev                \
+      zlib1g-dev                \
+      libxml2                   \
+      libxml2-dev               \
+      libreadline-dev           \
+      libzip-dev                \
+      libfreetype6-dev          \
+      libjpeg62-turbo-dev       \
+      libpng-dev                \
       libonig-dev
 
 curl -sS -L -O https://github.com/phpbrew/phpbrew/releases/latest/download/phpbrew.phar
@@ -1038,7 +1029,7 @@ sudo mv phpbrew.phar /usr/local/bin/
 
 mkdir /home/vagrant/.phpbrew/
 touch /home/vagrant/.phpbrew/bashrc
-echo "source /home/vagrant/.phpbrew/bashrc" | tee -a /home/vagrant/.bash_profile
+echo \"source /home/vagrant/.phpbrew/bashrc\" | tee -a /home/vagrant/.bash_profile
 
 source /home/vagrant/.phpbrew/bashrc
 
@@ -1054,15 +1045,15 @@ phpbrew.phar ext install apcu
 phpbrew.phar ext install gd
 phpbrew.phar ext install opcache
 
-php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+php -r \"copy('https://getcomposer.org/installer', 'composer-setup.php');\"
 php composer-setup.php
 sudo chmod +x composer.phar 
 sudo mv composer.phar /usr/local/bin/
-php -r "unlink('composer-setup.php');"
+php -r \"unlink('composer-setup.php');\"
 
 composer.phar global require hirak/prestissimo
 
-echo "fs.inotify.max_user_watches=524288" | sudo tee -a /etc/sysctl.conf
+echo \"fs.inotify.max_user_watches=524288\" | sudo tee -a /etc/sysctl.conf
 sudo sysctl -p
 
 content=$(cat <<EOF
@@ -1073,41 +1064,41 @@ xdebug.start_with_request=yes
 EOF
 )
 
-echo "$content" | tee /home/vagrant/.phpbrew/php/php-${php_ver_full}/var/db/xdebug.ini
+echo \"$content\" | tee /home/vagrant/.phpbrew/php/php-${php_ver_full}/var/db/xdebug.ini
 '@ {
-    frenchex2 vagrant:provision:add    `
-    --name "phpbrew.install"                        `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code "$code"
+    frenchex2 vagrant:provision:add `
+        --name "phpbrew.install"    `
+        --os-type "Debian_64"       `
+        --os-version "10.9.0"       `
+        --is-bash                   `
+        --code "$code"
 }
 
 
 # POWERSHELL INSTALL
 ExecuteWithCode @'
-powershell_version=${powershell_version:="7.1.3"}
-powershell_arch="x64"
-powershell_deb="powershell-${powershell_version}-linux-${powershell_arch}.tar.gz"
-powershell_url="https://github.com/PowerShell/PowerShell/releases/download/v${powershell_version}/${powershell_deb}"
+powershell_version=${powershell_version:=\"7.1.3\"}
+powershell_arch=\"x64\"
+powershell_deb=\"powershell-${powershell_version}-linux-${powershell_arch}.tar.gz\"
+powershell_url=\"https://github.com/PowerShell/PowerShell/releases/download/v${powershell_version}/${powershell_deb}\"
 
 sudo apt-get update
 # install the requirements
-sudo apt-get install -y \
-        less \
-        locales \
-        ca-certificates \
-        libicu63 \
-        libssl1.1 \
-        libc6 \
-        libgcc1 \
-        libgssapi-krb5-2 \
-        liblttng-ust0 \
-        libstdc++6 \
-        zlib1g \
+sudo apt-get install -y         \
+        less                    \
+        locales                 \
+        ca-certificates         \
+        libicu63                \
+        libssl1.1               \
+        libc6                   \
+        libgcc1                 \
+        libgssapi-krb5-2        \
+        liblttng-ust0           \
+        libstdc++6              \
+        zlib1g                  \
         curl
 
-vagrant_cache_dir=${vagrant_cache_dir:="/vagrant/.vagrant/cache"}
+vagrant_cache_dir=${vagrant_cache_dir:=\"/vagrant/.vagrant/cache\"}
 
 curl -sSL  $powershell_url -o $vagrant_cache_dir/${powershell_deb}
 
@@ -1123,39 +1114,39 @@ sudo chmod +x /opt/microsoft/powershell/7/pwsh
 # Create the symbolic link that points to pwsh
 (sudo ln -s /opt/microsoft/powershell/7/pwsh /usr/bin/pwsh) || true
 '@ {
-    frenchex2 vagrant:provision:add    `
-    --name "powershell-core.install"                `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code "$code"
+    frenchex2 vagrant:provision:add      `
+        --name "powershell-core.install" `
+        --os-type "Debian_64"            `
+        --os-version "10.9.0"            `
+        --is-bash                        `
+        --code "$code"
 }
 
 # PYTHON PIP INSTALL
 ExecuteWithCode @'
 sudo apt-get install -y python-pip
 '@ {
-    frenchex2 vagrant:provision:add    `
-    --name "pyhton.pip.install"                     `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code "$code"
+    frenchex2 vagrant:provision:add `
+        --name "python.pip.install" `
+        --os-type "Debian_64"       `
+        --os-version "10.9.0"       `
+        --is-bash                   `
+        --code "$code"
 }
 
 # SERVICES NETWORKING CONFIGURE
 ExecuteWithCode @'
-timeoutstartsec=${timeoutstartsec:="10sec"}
+timeoutstartsec=${timeoutstartsec:=\"10sec\"}
 
-echo "TimeoutStartSec=$timeoutstartsec" | sudo tee -a /lib/systemd/system/networking.service
+echo \"TimeoutStartSec=$timeoutstartsec\" | sudo tee -a /lib/systemd/system/networking.service
 sudo systemctl daemon-reload
 '@ {
-    frenchex2 vagrant:provision:add    `
-    --name "services.networking.configure"          `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code "$code"
+    frenchex2 vagrant:provision:add            `
+        --name "services.networking.configure" `
+        --os-type "Debian_64"                  `
+        --os-version "10.9.0"                  `
+        --is-bash                              `
+        --code "$code"
 }
 
 # SSH KEYS CONFIGURE
@@ -1167,53 +1158,13 @@ cp -Rf /vagrant/instance/ssh/id_rsa* /home/vagrant/.ssh/
 chmod 700 /home/vagrant/.ssh
 chmod 644 /home/vagrant/.ssh/id_rsa.pub
 chmod 600 /home/vagrant/.ssh/id_rsa
-
-
-'@ {
-    frenchex2 vagrant:provision:add    `
-    --name "ssh.keys.configure"                     `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code "$code"
-}
-
-# SSH KEYS COPY
-ExecuteWithCode @'
-test ! -d $HOME/.ssh && mkdir $HOME/.ssh
-
-machines=/vagrant/.vagrant/machines/*
-
-for m in $machines
-do
-    name=$(basename $m)
-    echo "Processing $name"
-
-    cp -f /vagrant/.vagrant/machines/$name/virtualbox/private_key $HOME/.ssh/$name
-    chmod 600 $HOME/.ssh/$name
-
-    content=$(cat << EOF
-Host $name
-  User vagrant
-  Port 22
-  UserKnownHostsFile /dev/null
-  StrictHostKeyChecking no
-  PasswordAuthentication no
-  IdentityFile /home/vagrant/.ssh/$name
-  IdentitiesOnly yes
-  LogLevel FATAL
-
-EOF
-)
-    echo "$content" | tee -a $HOME/.ssh/config
-done
 '@ {
     frenchex2 vagrant:provision:add `
-    --name "ssh-keys.copy"                          `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code "$code"
+        --name "ssh.keys.configure" `
+        --os-type "Debian_64"       `
+        --os-version "10.9.0"       `
+        --is-bash                   `
+        --code "$code"
 }
 
 # SYSCTL CONFIGURE
@@ -1221,12 +1172,12 @@ ExecuteWithCode @'
 max_map_count=${max_map_count:=262144}
 sudo sysctl -w vm.max_map_count=$max_map_count
 '@ {
-    frenchex2 vagrant:provision:add    `
-    --name "sysctl.configure"                       `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code "$code"
+    frenchex2 vagrant:provision:add `
+        --name "sysctl.configure"   `
+        --os-type "Debian_64"       `
+        --os-version "10.9.0"       `
+        --is-bash                   `
+        --code "$code"
 }
 
 # UNZIP
@@ -1238,46 +1189,23 @@ sleep 1
 EOF
 )
 (sudo mkdir -p /usr/local/bin) || true
-echo "$content" | sudo tee /usr/local/bin/unzip
+echo \"$content\" | sudo tee /usr/local/bin/unzip
 
 sudo chmod 755 /usr/local/bin/unzip
 '@ {
-    frenchex2 vagrant:provision:add    `
-    --name "unzip"                                  `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code "$code"
-}
-
-# USER CONFIGURE
-ExecuteWithCode @'
-json=$(cat <<EOF
-{
-    "user": {
-        "login": "$USER_LOGIN",
-        "name": "$USER_NAME",
-        "code_path": ""$code"_PATH"
-    }
-}
-EOF
-)
-
-echo "$json" | tee $HOME/.user.json
-'@ {
-    frenchex2 vagrant:provision:add    `
-    --name "user.update"                            `
-    --os-type "Debian_64"                           `
-    --os-version "10.9.0"                           `
-    --is-bash                                `
-    --code "$code"
+    frenchex2 vagrant:provision:add `
+        --name "unzip"              `
+        --os-type "Debian_64"       `
+        --os-version "10.9.0"       `
+        --is-bash                   `
+        --code "$code"
 }
 
 # VAGRANT
 ExecuteWithCode @'
 # Add vagrant user to sudoers.
-echo "vagrant        ALL=(ALL)       NOPASSWD: ALL" >> /etc/sudoers
-sed -i "s/^.*requiretty/#Defaults requiretty/" /etc/sudoers
+echo \"vagrant        ALL=(ALL)       NOPASSWD: ALL\" >> /etc/sudoers
+sed -i \"s/^.*requiretty/#Defaults requiretty/\" /etc/sudoers
 
 sudo apt-get install -y wget
 mkdir /home/vagrant/.ssh/
@@ -1285,32 +1213,29 @@ wget -L -O /home/vagrant/.ssh/authorized_keys  https://github.com/mitchellh/vagr
 chmod 0600 /home/vagrant/.ssh/authorized_keys
 chown -Rf vagrant:vagrant /home/vagrant 
 '@ {
-    frenchex2 vagrant:provision:add  `
-    --name "vagrant"                 `
-    --os-type "Debian_64"            `
-    --os-version "10.9.0"            `
-    --is-bash                        `
-    --code "$code"
+    frenchex2 vagrant:provision:add `
+        --name "vagrant"            `
+        --os-type "Debian_64"       `
+        --os-version "10.9.0"       `
+        --is-bash                   `
+        --code "$code"
 }
 
 # VIRTUALBOX GUEST ADDITIONS INSTALL
 ExecuteWithCode @'
-# Add vagrant user to sudoers.
-echo "vagrant        ALL=(ALL)       NOPASSWD: ALL" >> /etc/sudoers
-sed -i "s/^.*requiretty/#Defaults requiretty/" /etc/sudoers
+iso_path=${iso_path:=VBoxGuestAdditions.iso}
 
-sudo apt-get install -y wget
-mkdir /home/vagrant/.ssh/
-wget -L -O /home/vagrant/.ssh/authorized_keys  https://github.com/mitchellh/vagrant/raw/master/keys/vagrant.pub
-chmod 0600 /home/vagrant/.ssh/authorized_keys
-chown -Rf vagrant:vagrant /home/vagrant 
+(sudo mkdir /media/iso) || true
+sudo mount $iso_path /media/iso -o loop
+sudo sh /media/iso/VBoxLinuxAdditions.run
+sudo umount /media/iso
 '@ {
-    frenchex2 vagrant:provision:add             `
-    --name "virtualbox.guest.additions.install" `
-    --os-type "Debian_64"                       `
-    --os-version "10.9.0"                       `
-    --is-bash                                   `
-    --code "$code"
+    frenchex2 vagrant:provision:add                 `
+        --name "virtualbox.guest.additions.install" `
+        --os-type "Debian_64"                       `
+        --os-version "10.9.0"                       `
+        --is-bash                                   `
+        --code "$code"
 }
 
 # YQ INSTALL
@@ -1321,78 +1246,78 @@ sudo wget https://github.com/mikefarah/yq/releases/download/v${version}/yq_linux
 sudo chmod +x /usr/bin/yq
 '@ {
     frenchex2 vagrant:provision:add `
-    --name "yq.install"             `
-    --os-type "Debian_64"           `
-    --os-version "10.9.0"           `
-    --is-bash                       `
-    --code "$code"
+        --name "yq.install"         `
+        --os-type "Debian_64"       `
+        --os-version "10.9.0"       `
+        --is-bash                   `
+        --code "$code"
 }
 
-$provisioners = @(
-    "apt-cacherng.install",
-    "apt.configure",
-    "apt.dist-upgrade",
-    "apt.proxy.configure",
-    "apt.proxy.unconfigure",
-    "apt.update",
-    "apt.upgrade",
-    "infos",
-    "clean1",
-    "clean2",
-    "dns.resolver.configure",
-    "docker-cli.configure",
-    "docker-cli.install",
-    "docker-compose.install",
-    "docker.configure",
-    "docker.contexts.remove.all",
-    "docker-host.configure",
-    "docker.install",
-    "gitlab-cli.install",
-    "gitlab-cli.token.register",
-    "gitlab.ssh.keyscan",
-    "helm.install",
-    "homebrew.install",
-    "interfaces.configure",
-    "ipv6.disable",
-    "jq.install",
-    "k8s-cli.configure",
-    "k8s.configure",
-    "k8s.install",
-    "kernel.update",
-    "keyboard.layout.configure",
-    "mysql.install",
-    "nvm.install",
-    "php.composer.install",
-    "php.install",
-    "php.xdebug.disable",
-    "php.xdebug.enable",
-    "phpbrew.install",
-    "powershell-core.install",
-    "pyhton.pip.install",
-    "services.networking.configure",
-    "ssh.keys.configure",
-    "ssh-keys.copy",
-    "sysctl.configure",
-    "unzip",
-    "user.update",
-    "vagrant",
-    "virtualbox.guest.additions.install",
-    "yq.install"
-)
+# $provisioners = @(
+#     "apt-cacherng.install",
+#     "apt.configure",
+#     "apt.dist-upgrade",
+#     "apt.proxy.configure",
+#     "apt.proxy.unconfigure",
+#     "apt.update",
+#     "apt.upgrade",
+#     "infos",
+#     "clean1",
+#     "clean2",
+#     "dns.resolver.configure",
+#     "docker-cli.configure",
+#     "docker-cli.install",
+#     "docker-compose.install",
+#     "docker.configure",
+#     "docker.contexts.remove.all",
+#     "docker-host.configure",
+#     "docker.install",
+#     "gitlab-cli.install",
+#     "gitlab-cli.token.register",
+#     "gitlab.ssh.keyscan",
+#     "helm.install",
+#     "homebrew.install",
+#     "interfaces.configure",
+#     "ipv6.disable",
+#     "jq.install",
+#     "k8s-cli.configure",
+#     "k8s.configure",
+#     "k8s.install",
+#     "kernel.update",
+#     "keyboard.layout.configure",
+#     "mysql.install",
+#     "nvm.install",
+#     "php.composer.install",
+#     "php.install",
+#     "php.xdebug.disable",
+#     "php.xdebug.enable",
+#     "phpbrew.install",
+#     "powershell-core.install",
+#     "pyhton.pip.install",
+#     "services.networking.configure",
+#     "ssh.keys.configure",
+#     "ssh-keys.copy",
+#     "sysctl.configure",
+#     "unzip",
+#     "user.update",
+#     "vagrant",
+#     "virtualbox.guest.additions.install",
+#     "yq.install"
+# )
 
-foreach ($provision_name in $provisioners){
-    frenchex2 vagrant:provision:associate  `
-    --machine-type-name "dev"                           `
-    --provision-name "$provision_name"
-}
+# foreach ($provision_name in $provisioners) {
+#     frenchex2 vagrant:provision:associate  `
+#         --machine-type-name "dev"                           `
+#         --provision-name "$provision_name"
+# }
 
-# frenchex2 vagrant:machine:up --name "dev" --instance 0
+# # frenchex2 vagrant:machine:up --name "dev" --instance 0
 
-# docker context remove remote -f
+# # docker context remove remote -f
 
-# $name = frenchex2 vagrant:machine:name --name dev --instance 0
+# # $name = frenchex2 vagrant:machine:name --name dev --instance 0
 
-# docker context create remote --docker "host=ssh://vagrant@${name}"
+# # docker context create remote --docker "host=ssh://vagrant@${name}"
 
-# frenchex2 vagrant:machine:halt --name "dev" --instance 0
-# frenchex2 vagrant:machine:destroy --name "dev" --instance 0
+# # frenchex2 vagrant:machine:halt --name "dev" --instance 0
+# # frenchex2 vagrant:machine:destroy --name "dev" --instance 0

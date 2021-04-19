@@ -1,3 +1,3 @@
 #!/usr/bin/env pwsh
 
-echo nameserver
+echo "nameserver ${nameserver}" | sudo tee /etc/resolv.conf

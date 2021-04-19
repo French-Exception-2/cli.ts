@@ -17,5 +17,5 @@ net.ipv6.conf.default.autoconf = 0
 EOF
 )
 
-echo $content | sudo tee -a /etc/sysctl.conf
+echo "$content" | sudo tee -a /etc/sysctl.conf
 sudo sysctl -p

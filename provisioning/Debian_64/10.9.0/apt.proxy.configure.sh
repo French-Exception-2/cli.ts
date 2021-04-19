@@ -15,4 +15,5 @@ EOF
 )
 
 echo $content | sudo tee /etc/apt/apt.conf.d/proxy.conf
-echo APT
+echo "APT proxy configured with ’http://${ip}:${APT_PORT}/’"
+sudo apt-get update

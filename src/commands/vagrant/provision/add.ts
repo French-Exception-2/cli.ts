@@ -95,7 +95,7 @@ interface VagrantProvisioning {
         await fs.writeFile(json_filepath, _json.toJson(json));
 
         if (argv.code && provision["os-type"] && provision["os-version"]) {
-            const code = (!provision.isBash ? "#!/usr/bin/env bash" : "#!/usr/bin/env pwsh") + "\r\n" + "\r\n" + argv.code;
+            const code = (!provision.isBash ? "#!/usr/bin/env bash" : "#!/usr/bin/env pwsh") + "\r\n" + "\r\n" + argv.code + "\r\n";
             const filepath = path.join(argv.path, 'provisioning', provision["os-type"], provision["os-version"]);
 
             if (!fs.access(filepath)) {

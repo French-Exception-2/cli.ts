@@ -1,6 +1,5 @@
 #!/usr/bin/env pwsh
 
-
 # Credits to:
 #  - http://vstone.eu/reducing-vagrant-box-size/
 #  - https://github.com/mitchellh/vagrant/issues/343

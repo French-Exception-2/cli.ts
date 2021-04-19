@@ -1,0 +1,1 @@
+C:/code/frenchex2/cli.ts_i1/resources/vagrant_init/Vagrantfile

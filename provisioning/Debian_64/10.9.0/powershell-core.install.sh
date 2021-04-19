@@ -1,27 +1,27 @@
 #!/usr/bin/env pwsh
 
-powershell_version=${powershell_version:=7.1.3}
-powershell_arch=x64
-powershell_deb=powershell-${powershell_version}-linux-${powershell_arch}.tar.gz
-powershell_url=https://github.com/PowerShell/PowerShell/releases/download/v${powershell_version}/${powershell_deb}
+powershell_version=${powershell_version:="7.1.3"}
+powershell_arch="x64"
+powershell_deb="powershell-${powershell_version}-linux-${powershell_arch}.tar.gz"
+powershell_url="https://github.com/PowerShell/PowerShell/releases/download/v${powershell_version}/${powershell_deb}"
 
 sudo apt-get update
 # install the requirements
-sudo apt-get install -y \
-        less \
-        locales \
-        ca-certificates \
-        libicu63 \
-        libssl1.1 \
-        libc6 \
-        libgcc1 \
-        libgssapi-krb5-2 \
-        liblttng-ust0 \
-        libstdc++6 \
-        zlib1g \
+sudo apt-get install -y         \
+        less                    \
+        locales                 \
+        ca-certificates         \
+        libicu63                \
+        libssl1.1               \
+        libc6                   \
+        libgcc1                 \
+        libgssapi-krb5-2        \
+        liblttng-ust0           \
+        libstdc++6              \
+        zlib1g                  \
         curl
 
-vagrant_cache_dir=${vagrant_cache_dir:=/vagrant/.vagrant/cache}
+vagrant_cache_dir=${vagrant_cache_dir:="/vagrant/.vagrant/cache"}
 
 curl -sSL  $powershell_url -o $vagrant_cache_dir/${powershell_deb}
 

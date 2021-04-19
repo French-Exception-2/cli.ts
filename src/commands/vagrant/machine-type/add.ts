@@ -38,22 +38,22 @@ interface VagrantMachineTypeAddArgv {
         required: true,
         description: "CPU Cap"
       },
-      os_type: {
+      "os-type": {
         type: "string",
         required: true,
         description: "OS Type"
       },
-      os_version: {
+      "os-version": {
         type: "string",
         required: true,
         description: "OS Version"
       },
-      ram_mb: {
+      "ram-mb": {
         type: "number",
         required: true,
         description: "RAM in MB"
       },
-      vram_mb: {
+      "vram-mb": {
         type: "number",
         required: true,
         description: "VRAM in MB"

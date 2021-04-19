@@ -12,10 +12,6 @@ interface ConfigDumpCommandArgv {
                 type: 'boolean',
                 default: false
             },
-            key: {
-                type: 'string',
-                required: true
-            },
             path: {
                 type: "string",
                 default: process.cwd(),
