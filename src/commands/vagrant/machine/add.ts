@@ -1,5 +1,5 @@
 interface VagrantMachineProvisionAddArgv extends VagrantMachineArgv {
-    "type-name": string
+    "machine-type-name": string
     "hostname-pattern": string
     instances: number
     enabled: boolean
@@ -16,11 +16,11 @@ interface VagrantMachineProvisionAddArgv extends VagrantMachineArgv {
     exports.desc = 'Vagrant add a new Machine';
     exports.builder = ((processCwd) => {
         const builder = {
-            type_name: {
+            "machine-type-name": {
                 type: "string",
                 description: "Name of VM"
             },
-            hostname_pattern: {
+            "hostname-pattern": {
                 type: "string",
                 default: "vdi-%vagrant.instance.formatted%-#{NAME}-#{INSTANCE}",
             },
@@ -38,15 +38,15 @@ interface VagrantMachineProvisionAddArgv extends VagrantMachineArgv {
                 type: "boolean",
                 default: true
             },
-            ip_pattern: {
+            "ip-pattern": {
                 type: "string",
                 default: "10.100.2.#{INSTANCE}"
             },
-            ip_start: {
+            "ip-start": {
                 type: "number",
                 default: 10
             },
-            ram_mb: {
+            "ram-mb": {
                 type: "number",
                 default: 2096
             },
@@ -63,7 +63,7 @@ interface VagrantMachineProvisionAddArgv extends VagrantMachineArgv {
         return builder;
     })(process.cwd());
     exports.handler = async function (argv: VagrantMachineProvisionAddArgv) {
-        console.log('vagrant:machine:add.begin');
+        console.log('vagrant:machine:add ' + argv.name);
         const path = require('path');
         const fs = require('fs-extra');
         const _json = require('./../../../Serialization');
@@ -71,8 +71,12 @@ interface VagrantMachineProvisionAddArgv extends VagrantMachineArgv {
         const json_filepath = path.join(argv.path, 'config.json');
         let json = JSON.parse(await fs.readFile(json_filepath));
 
-        json.nodes[argv.name] = {
-            vagrant_type: argv["type-name"],
+        if (!json['$'].nodes || Array.isArray(json['$'].nodes)) {
+            json['$'].nodes = {};
+        }
+
+        json['$'].nodes[argv.name] = {
+            vagrant_type: argv["machine-type-name"],
             hostname_pattern: argv["hostname-pattern"],
             instances: argv.instances,
             enabled: argv.enabled,
@@ -85,7 +89,6 @@ interface VagrantMachineProvisionAddArgv extends VagrantMachineArgv {
         const data = _json.toJson(json);
         await fs.writeFile(json_filepath, data);
 
-        console.log('vagrant:machine:add.end');
     };
 
 })();

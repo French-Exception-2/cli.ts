@@ -1253,63 +1253,65 @@ sudo chmod +x /usr/bin/yq
         --code "$code"
 }
 
-# $provisioners = @(
-#     "apt-cacherng.install",
-#     "apt.configure",
-#     "apt.dist-upgrade",
-#     "apt.proxy.configure",
-#     "apt.proxy.unconfigure",
-#     "apt.update",
-#     "apt.upgrade",
-#     "infos",
-#     "clean1",
-#     "clean2",
-#     "dns.resolver.configure",
-#     "docker-cli.configure",
-#     "docker-cli.install",
-#     "docker-compose.install",
-#     "docker.configure",
-#     "docker.contexts.remove.all",
-#     "docker-host.configure",
-#     "docker.install",
-#     "gitlab-cli.install",
-#     "gitlab-cli.token.register",
-#     "gitlab.ssh.keyscan",
-#     "helm.install",
-#     "homebrew.install",
-#     "interfaces.configure",
-#     "ipv6.disable",
-#     "jq.install",
-#     "k8s-cli.configure",
-#     "k8s.configure",
-#     "k8s.install",
-#     "kernel.update",
-#     "keyboard.layout.configure",
-#     "mysql.install",
-#     "nvm.install",
-#     "php.composer.install",
-#     "php.install",
-#     "php.xdebug.disable",
-#     "php.xdebug.enable",
-#     "phpbrew.install",
-#     "powershell-core.install",
-#     "pyhton.pip.install",
-#     "services.networking.configure",
-#     "ssh.keys.configure",
-#     "ssh-keys.copy",
-#     "sysctl.configure",
-#     "unzip",
-#     "user.update",
-#     "vagrant",
-#     "virtualbox.guest.additions.install",
-#     "yq.install"
-# )
+$provisioners = @(
+    "apt-cacherng.install",
+    "apt.configure",
+    "apt.dist-upgrade",
+    "apt.proxy.configure",
+    "apt.proxy.unconfigure",
+    "apt.update",
+    "apt.upgrade",
+    "infos",
+    "clean1",
+    "clean2",
+    "dns.resolver.configure",
+    "docker-cli.configure",
+    "docker-cli.install",
+    "docker-compose.install",
+    "docker.configure",
+    "docker.contexts.remove.all",
+    "docker-host.configure",
+    "docker.install",
+    "gitlab-cli.install",
+    "gitlab-cli.token.register",
+    "gitlab.ssh.keyscan",
+    "helm.install",
+    "homebrew.install",
+    "interfaces.configure",
+    "ipv6.disable",
+    "jq.install",
+    "k8s-cli.configure",
+    "k8s.configure",
+    "k8s.install",
+    "kernel.update",
+    "keyboard.layout.configure",
+    "mysql.install",
+    "nvm.install",
+    "php.composer.install",
+    "php.install",
+    "php.xdebug.disable",
+    "php.xdebug.enable",
+    "phpbrew.install",
+    "powershell-core.install",
+    "pyhton.pip.install",
+    "services.networking.configure",
+    "ssh.keys.configure",
+    "ssh-keys.copy",
+    "sysctl.configure",
+    "unzip",
+    "user.update",
+    "vagrant",
+    "virtualbox.guest.additions.install",
+    "yq.install"
+)
 
-# foreach ($provision_name in $provisioners) {
-#     frenchex2 vagrant:provision:associate  `
-#         --machine-type-name "dev"                           `
-#         --provision-name "$provision_name"
-# }
+foreach ($provision_name in $provisioners) {
+    frenchex2 vagrant:provision:associate  `
+        --machine-type-name "dev"                           `
+        --provision-name "$provision_name"
+}
+
+frenchex2 vagrant:machine:add --name "dev" --instances 1 --machine-type-name "dev"
 
 # # frenchex2 vagrant:machine:up --name "dev" --instance 0
 

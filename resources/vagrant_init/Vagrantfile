@@ -10,9 +10,9 @@ ENV["LC_ALL"] = "en_US.UTF-8"
 
 # Load DUMPED Configuration
   require 'json'
-  vagrant_config = JSON.parse(File.read(File.join(dir,"config.dumped.json")))
-  
-Vagrant.configure(VAGRANT_VERSION) do |config|
+  vagrant_config = JSON.parse(`frenchex2 config:dump`)
+
+  Vagrant.configure(VAGRANT_VERSION) do |config|
 # Global
 
   # Plugins
@@ -44,6 +44,13 @@ Vagrant.configure(VAGRANT_VERSION) do |config|
 
 
   # Virtual Machines
+
+  if (! vagrant_config['nodes'])
+    puts vagrant_config
+    throw "Bad configuration file";
+    exit
+  end
+
   # Iterate through nodes entry in JSON file
   vagrant_config["nodes"].each do |servername, server|
     if (!server['enabled'])
