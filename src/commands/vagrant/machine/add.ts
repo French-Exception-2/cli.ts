@@ -76,14 +76,14 @@ interface VagrantMachineProvisionAddArgv extends VagrantMachineArgv {
         }
 
         json['$'].nodes[argv.name] = {
-            vagrant_type: argv["machine-type-name"],
-            hostname_pattern: argv["hostname-pattern"],
+            "vagrant-type": argv["machine-type-name"],
+            "hostname-pattern": argv["hostname-pattern"],
             instances: argv.instances,
             enabled: argv.enabled,
             primary: argv.primary,
             vcpus: argv.vcpus,
-            ip_pattern: argv["ip-pattern"],
-            ip_start: argv["ip-start"]
+            "ip-pattern": argv["ip-pattern"],
+            "ip-start": argv["ip-start"]
         }
 
         const data = _json.toJson(json);

@@ -245,6 +245,21 @@
             "args": [
                 "config:dump"
             ]
-        }
+        },
+        {
+            "name": "vagrant:machine:name dev",
+            "program": "${workspaceFolder}/bin/frenchex2",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "cwd": "${workspaceFolder}/tmp",
+            "type": "pwa-node",
+            "args": [
+                "vagrant:machine:name",
+                "--name",
+                "'dev'"
+            ]
+        },
     ]
 }
