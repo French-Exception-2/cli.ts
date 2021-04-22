@@ -45,20 +45,20 @@ ENV["LC_ALL"] = "en_US.UTF-8"
 
   # Virtual Machines
 
-  if (! vagrant_config['nodes'])
+  if (!vagrant_config['nodes'])
     puts vagrant_config
     throw "Bad configuration file";
     exit
   end
 
   # Iterate through nodes entry in JSON file
-  vagrant_config["nodes"].each do |servername, server|
+  vagrant_config['nodes'].each do |servername, server|
     if (!server['enabled'])
       next
     end
 
     
-    srv_type_name = server['vagrant_type']
+    srv_type_name = server['vagrant-type']
     srv_type = vagrant_config['nodes-types'][srv_type_name]
     server = Vagrant::Util::DeepMerge.deep_merge(srv_type, server)
 
@@ -66,9 +66,9 @@ ENV["LC_ALL"] = "en_US.UTF-8"
     
     (0..instances_n-1).each { |instance| 
       instance_str = format('%02d', instance)
-      ip = server['ip_pattern'].gsub("\#{INSTANCE}", (instance+server["ip_start"]).to_s)
+      ip = server['ip-pattern'].gsub("\#{INSTANCE}", (instance+server["ip-start"]).to_s)
 
-      servername_real = server["hostname_pattern"]
+      servername_real = server["hostname-pattern"]
         .gsub("\#{INSTANCE}", instance_str)
         .gsub("\#{NAME}", servername)
       

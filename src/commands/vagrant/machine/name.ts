@@ -39,7 +39,7 @@ interface VagrantMachineNameResponse extends VagrantMachineNameArgv {
         return builder;
     })(process.cwd());
     exports.api = async function (request: VagrantMachineNameRequest, response: VagrantMachineNameResponse) {
-        response = response || {};
+        response = response || request;
 
         const path = require('path');
         const fs = require('fs-extra');

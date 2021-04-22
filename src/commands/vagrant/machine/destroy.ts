@@ -2,43 +2,57 @@ interface VagrantMachineDestroyArgv {
     name: string
     instance: number
     path: string
+    "config-env": string
     force: boolean
+}
+interface VagrantMachineDestroyRequest extends VagrantMachineDestroyArgv {
+
+}
+
+interface VagrantMachineDestroyResponse extends VagrantMachineDestroyArgv {
+
 }
 
 (() => {
-    exports.command = 'vagrant:machine:destroy';
+    exports.command = 'vagrant:machine:destroy <name>';
     exports.desc = 'Vagrant Destroy a Machine';
-    exports.builder = ((process) => {
+    exports.builder = ((processCwd: string) => {
         const builder = {
-
+            name: {
+                type: "string",
+                required: true
+            },
+            instance: {
+                type: "number",
+                default: 0,
+            },
+            path: {
+                type: "string",
+                default: processCwd,
+            },
+            "config-env": {
+                type: 'string',
+                default: 'dev'
+            }
         };
 
         return builder;
-    })(process);
-    exports.handler = async function (argv: VagrantMachineDestroyArgv) {
-        const path = require('path');
-        const fs = require('fs-extra');
-        const _json = require('./../../../Serialization');
-        const deepmerge = require('deepmerge');
-        const sprintf = require('sprintf-js').sprintf;
+    })(process.cwd());
+    exports.api = async function (request: VagrantMachineDestroyRequest, response: VagrantMachineDestroyResponse) {
         const cp = require('child_process');
 
-        const json_filepath = path.join(argv.path, 'config.json');
-        let json = JSON.parse(await fs.readFile(json_filepath));
+        const nameRequest = request;
+        const nameResponse = await require('./name').api(nameRequest);
 
-        const json_local_filepath = path.join(argv.path, 'config-local.json');
-        let json_local = JSON.parse(await fs.readFile(json_local_filepath));
+        response.name = nameResponse.name;
 
-        const merged = deepmerge(json, json_local);
+        const proc = await cp.spawn("vagrant", ["destroy", nameResponse.name, (request.force ? "--force" : "")], { stdio: "inherit" });
+        
+        return response;
 
-        const vagrant_instance_str = sprintf('%02d', merged.vagrant.instance);
-        const vagrant_machine_instance_str = sprintf('%02d', argv.instance);
-        const vagrant_machine_str = merged.nodes[argv.name].hostname_pattern
-            .replace(/\#\{VAGRANT_INSTANCE\}/, vagrant_instance_str)
-            .replace(/\#\{NAME\}/, argv.name)
-            .replace(/\#\{INSTANCE\}/, vagrant_machine_instance_str)
-
-        await cp.spawn("vagrant", ["destroy", vagrant_machine_str, (argv.force ? "--force" : "")], { stdio: "inherit" });
+    }
+    exports.handler = async function (argv: VagrantMachineDestroyArgv) {
+        await exports.api(argv, {});
     };
 
 })();

@@ -86,7 +86,7 @@ interface VagrantProvisioning {
             isBash: argv.isBash
         }
 
-        if (null == json['$'].provisioning || undefined == json['$'].provisioning) {
+        if (null == json['$'].provisioning || undefined == json['$'].provisioning || !Array.isArray(json['$'].provisioning)) {
             json['$'].provisioning = [];
         }
 
