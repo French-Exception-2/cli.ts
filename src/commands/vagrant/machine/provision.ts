@@ -10,20 +10,21 @@ interface VagrantMachineProvisionResponse extends VagrantMachineProvisionArgv {
 }
 
 (() => {
-    exports.command = 'vagrant:machine:provision <name> [provision-name]';
+    exports.command = 'vagrant:machine:provision <machine-name>';
     exports.desc = 'Vagrant Provision a Machine';
     exports.builder = ((processCwd: string) => {
         const builder = {
             'provision-name': {
                 type: 'string',
-                required: false
+                required: false,
+                default: null
             },
             'machine-name': {
                 type: 'string',
                 required: true,
                 description: 'Machine name to provision'
             },
-            instance: {
+            'machine-instance': {
                 type: 'number',
                 default: 0,
                 description: 'Machine instance to provision'
@@ -49,15 +50,15 @@ interface VagrantMachineProvisionResponse extends VagrantMachineProvisionArgv {
             'machine-name': request['machine-name'],
             'path': request.path
         };
-        
-        const nameResponse = await require('./name').api(nameRequest);
 
-        response['machine-name'] = nameResponse.name;
+        const nameResponse: VagrantMachineNameResponse = await require('./name').api(nameRequest);
+
+        response['machine-name'] = nameResponse["machine-name"];
 
         const proc = await cp.spawn('vagrant',
             [
                 'provision',
-                nameResponse.name
+                nameResponse['machine-name']
             ].concat(
                 request['provision-name'] ? ['--provision-with', request['provision-name']] : []
             ),

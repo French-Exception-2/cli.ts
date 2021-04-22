@@ -1,4 +1,4 @@
-#!/usr/bin/env pwsh
+#!/usr/bin/env bash
 
 content=$(cat <<EOF
 zend_extension=xdebug.so

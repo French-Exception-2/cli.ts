@@ -1,4 +1,4 @@
-#!/usr/bin/env pwsh
+#!/usr/bin/env bash
 
 iso_path=${iso_path:=VBoxGuestAdditions.iso}
 

@@ -1,3 +1,3 @@
-#!/usr/bin/env pwsh
+#!/usr/bin/env bash
 
 ssh-keyscan gitlab.com -y

@@ -1,4 +1,4 @@
-#!/usr/bin/env pwsh
+#!/usr/bin/env bash
 
 apt_conf_file=${apt_conf_file:=/etc/apt/apt.conf.d/00no_recommends_no_suggest}
 apt_conf=$(cat <<EOF

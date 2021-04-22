@@ -1,4 +1,4 @@
-#!/usr/bin/env pwsh
+#!/usr/bin/env bash
 
 sudo=${sudo:=sudo}
 apt_get=${apt_get:=apt-get}

@@ -1,4 +1,4 @@
-#!/usr/bin/env pwsh
+#!/usr/bin/env bash
 
 content_dir=${context_dir:=/vagrant/instance/docker-hosts}
 contexts=$content_dir/*.json

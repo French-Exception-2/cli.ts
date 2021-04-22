@@ -1,4 +1,4 @@
-#!/usr/bin/env pwsh
+#!/usr/bin/env bash
 
 eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
 GITLAB_HOSTNAME=${GITLAB_HOSTNAME:=gitlab.com}

@@ -1,4 +1,4 @@
-#!/usr/bin/env pwsh
+#!/usr/bin/env bash
 
 version=${version:=3.5.3}
 url=${url:=https://get.helm.sh/helm-v${version}-linux-amd64.tar.gz}

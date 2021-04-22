@@ -1,4 +1,4 @@
-#!/usr/bin/env pwsh
+#!/usr/bin/env bash
 
 sudo /sbin/sysctl -w net.ipv6.conf.all.disable_ipv6=1
 

@@ -262,5 +262,19 @@
                 "'dev'"
             ]
         },
+        {
+            "name": "vagrant:machine:provision dev",
+            "program": "${workspaceFolder}/bin/frenchex2",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "cwd": "${workspaceFolder}/tmp",
+            "type": "pwa-node",
+            "args": [
+                "vagrant:machine:provision",
+                "'dev'"
+            ]
+        },
     ]
 }

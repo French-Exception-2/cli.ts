@@ -1,4 +1,4 @@
-#!/usr/bin/env pwsh
+#!/usr/bin/env bash
 
 # phpbrew needs a valid php install > 7.1
 php_ver_full=${php_ver_full:="7.3.25"}

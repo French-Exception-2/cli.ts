@@ -1,4 +1,4 @@
-#!/usr/bin/env pwsh
+#!/usr/bin/env bash
 
 test ! -d /home/vagrant/.ssh && mkdir /home/vagrant/.ssh
 

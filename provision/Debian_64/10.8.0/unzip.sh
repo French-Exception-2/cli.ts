@@ -1,4 +1,4 @@
-#!/usr/bin/env pwsh
+#!/usr/bin/env bash
 
 content=$(cat <<EOF
 #!/bin/sh

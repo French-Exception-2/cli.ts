@@ -1,4 +1,4 @@
-#!/usr/bin/env pwsh
+#!/usr/bin/env bash
 
 info_dir=${info_dir:=/vagrant/instance/IPv4/}
 device=${device:=eth1}

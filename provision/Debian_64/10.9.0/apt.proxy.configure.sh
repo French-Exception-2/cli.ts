@@ -1,4 +1,4 @@
-#!/usr/bin/env pwsh
+#!/usr/bin/env bash
 
 APT_PORT=${APT_PORT:=3142}
 

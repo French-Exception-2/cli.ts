@@ -1,4 +1,4 @@
-#!/usr/bin/env pwsh
+#!/usr/bin/env bash
 
 kernel_version=${kernel_version:=5.9.0-0.bpo.5}
 

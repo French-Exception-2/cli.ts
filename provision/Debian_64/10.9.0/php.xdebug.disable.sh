@@ -1,4 +1,4 @@
-#!/usr/bin/env pwsh
+#!/usr/bin/env bash
 
 source /home/vagrant/.phpbrew/bashrc
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env pwsh
+#!/usr/bin/env bash
 
 # Credits to:
 #  - http://vstone.eu/reducing-vagrant-box-size/

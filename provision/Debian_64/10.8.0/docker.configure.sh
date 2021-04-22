@@ -1,4 +1,4 @@
-#!/usr/bin/env pwsh
+#!/usr/bin/env bash
 
 bind_address=${bind_address:=0.0.0.0}
 

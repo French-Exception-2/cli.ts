@@ -1,4 +1,4 @@
-#!/usr/bin/env pwsh
+#!/usr/bin/env bash
 
 powershell_version=${powershell_version:="7.1.3"}
 powershell_arch="x64"

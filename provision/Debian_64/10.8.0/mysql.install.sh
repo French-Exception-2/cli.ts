@@ -1,4 +1,4 @@
-#!/usr/bin/env pwsh
+#!/usr/bin/env bash
 
 sudo DEBIAN_FRONTEND=noninteractive apt-get -fy -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install debconf-utils
 sudo debconf-set-selections <<< "mysql-server mysql-server/root_password password root"
