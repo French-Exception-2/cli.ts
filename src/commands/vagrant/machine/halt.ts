@@ -1,43 +1,75 @@
-interface VagrantMachineHaltArgv {
-    path:string
-    instance:number
-    name:string
+interface VagrantMachineHaltArgv extends VagrantMachineArgv {
+    force: boolean
+}
+interface VagrantMachineHaltRequest extends VagrantMachineHaltArgv {
+
 }
 
+interface VagrantMachineHaltResponse extends VagrantMachineHaltArgv {
 
-(async () => {
-    exports.command = 'vagrant:machine:halt';
-    exports.desc = 'Vagrant halt a machine';
-    exports.builder = ((processCwd) => {
+}
+
+(() => {
+    exports.command = 'vagrant:machine:halt <name>';
+    exports.desc = 'Vagrant Halt a Machine';
+    exports.builder = ((processCwd: string) => {
         const builder = {
-
+            'machine-name': {
+                type: 'string',
+                required: true
+            },
+            'machine-instance': {
+                type: 'number',
+                default: 0,
+            },
+            path: {
+                type: 'string',
+                default: processCwd,
+            },
+            'config-env': {
+                type: 'string',
+                default: 'dev'
+            },
+            force: {
+                type: 'boolean',
+                default: false,
+                description: 'Force halt'
+            }
         };
 
         return builder;
     })(process.cwd());
-    exports.handler = async function (argv: VagrantMachineHaltArgv) {
-        const path = require('path');
-        const fs = require('fs-extra');
-        const _json = require('./../../../Serialization');
-        const deepmerge = require('deepmerge');
-        const sprintf = require('sprintf-js').sprintf;
+    exports.api = async function (request: VagrantMachineHaltRequest, response: VagrantMachineDestroyResponse) {
         const cp = require('child_process');
-    
-        const json_filepath = path.join(argv.path, 'config.json');
-        let json = JSON.parse(await fs.readFile(json_filepath));
-    
-        const json_local_filepath = path.join(argv.path, 'config-local.json');
-        let json_local = JSON.parse(await fs.readFile(json_local_filepath));
-    
-        const merged = deepmerge(json, json_local);
-    
-        const vagrant_instance_str = sprintf('%02d', merged.vagrant.instance);
-        const vagrant_machine_instance_str = sprintf('%02d', argv.instance);
-        const vagrant_machine_str = merged.nodes[argv.name].hostname_pattern
-        .replace(/\#\{VAGRANT_INSTANCE\}/, vagrant_instance_str)
-        .replace(/\#\{NAME\}/, argv.name)
-        .replace(/\#\{INSTANCE\}/, vagrant_machine_instance_str)
-    
-        await cp.spawn("vagrant", ["halt", vagrant_machine_str], {stdio:"inherit"});
+
+        const nameRequest: VagrantMachineNameRequest = {
+            'config-env': request['config-env'],
+            'machine-instance': request['machine-instance'],
+            'machine-name': request['machine-name'],
+            'path': request.path
+        };
+
+        const nameResponse: VagrantMachineNameResponse = await require('./name').api(nameRequest);
+
+        response['machine-name'] = nameResponse['machine-name'];
+
+        const proc = await cp.spawn(
+            'vagrant',
+            [
+                'halt',
+                nameResponse['machine-name'],
+            ].concat(
+                request.force ? ['--force'] : []
+            ),
+            {
+                stdio: 'inherit',
+                cwd: request.path
+            }
+        );
+
+        return response;
+    }
+    exports.handler = async function (argv: VagrantMachineDestroyArgv) {
+        await exports.api(argv, {});
     };
-  })();
+})();

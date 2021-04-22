@@ -1,5 +1,6 @@
 interface VagrantMachineArgv {
-    path:string
-    instance:number
-    name:string
+    path: string
+    "machine-instance": number
+    "machine-name": string
+    "config-env": string
 }

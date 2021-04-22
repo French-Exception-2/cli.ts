@@ -197,8 +197,9 @@
             "type": "pwa-node",
             "args": [
                 "vagrant:machine:up",
-                "--name",
-                "infra",
+                "dev",
+                "--machine-instance",
+                "0"
             ]
         },
         {
@@ -230,7 +231,7 @@
             "args": [
                 "config:get",
                 "--key",
-                "nodes-types"
+                "machines-types"
             ]
         },
         {

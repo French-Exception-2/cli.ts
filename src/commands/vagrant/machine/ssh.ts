@@ -1,43 +1,103 @@
 interface VagrantMachineSshArgv extends VagrantMachineArgv {
-    
+    command?: string
+    plain?: boolean
+    tty: boolean
+    color: boolean
+    'machine-readable': boolean
+}
+interface VagrantMachineSshRequest extends VagrantMachineSshArgv {
+
 }
 
-(async () => {
-    exports.command = 'vagrant:machine:ssh';
-    exports.desc = 'Vagrant ssh machine';
-    exports.builder = ((processCwd) => {
-        path:{
+interface VagrantMachineSshResponse extends VagrantMachineSshArgv {
 
-        }
-    })(process.cwd);
-    exports.handler = async function (argv: VagrantMachineSshArgv) {
-        const path = require('path');
-        const fs = require('fs-extra');
-        const _json = require('./../../../Serialization');
-        const deepmerge = require('deepmerge');
-        const sprintf = require('sprintf-js').sprintf;
+}
+
+(() => {
+    exports.command = 'vagrant:machine:ssh <machine-name>';
+    exports.desc = 'Vagrant SSH a Machine';
+    exports.builder = ((processCwd: string) => {
+        const builder = {
+            'machine-name': {
+                type: 'string',
+                required: true
+            },
+            instance: {
+                type: 'number',
+                default: 0,
+            },
+            path: {
+                type: 'string',
+                default: processCwd,
+            },
+            'config-env': {
+                type: 'string',
+                default: 'dev'
+            },
+            'command': {
+                type: 'string',
+                default: null
+            },
+            'plain': {
+                type: 'boolean',
+                default: false
+            },
+            'tty': {
+                type: 'boolean',
+                default: true
+            },
+            'color': {
+                type: 'boolean',
+                default: true
+            },
+            'machine-readable': {
+                type: 'boolean',
+                default: false
+            }
+        };
+
+        return builder;
+    })(process.cwd());
+    exports.api = async function (request: VagrantMachineSshRequest, response: VagrantMachineSshResponse) {
         const cp = require('child_process');
-    
-        const json_filepath = path.join(argv.path, 'config.json');
-        let json = JSON.parse(await fs.readFile(json_filepath));
-    
-        const json_local_filepath = path.join(argv.path, 'config-local.json');
-        let json_local = JSON.parse(await fs.readFile(json_local_filepath));
-    
-        const merged = deepmerge(json, json_local);
-    
-        const vagrant_instance_str = sprintf('%02d', merged.vagrant.instance);
-        const vagrant_machine_instance_str = sprintf('%02d', argv.instance);
-        const vagrant_machine_str = merged.nodes[argv.name].hostname_pattern
-            .replace(/\#\{VAGRANT_INSTANCE\}/, vagrant_instance_str)
-            .replace(/\#\{NAME\}/, argv.name)
-            .replace(/\#\{INSTANCE\}/, vagrant_machine_instance_str)
-    
-        const proc = await cp.spawn("ssh", [vagrant_machine_str], { stdio: 'inherit' });
-    
-        proc.on('exit', () => {
-    
-            console.log('lol');
-        });
+
+        const nameRequest: VagrantMachineNameRequest = {
+            'config-env': request['config-env'],
+            'machine-instance': request['machine-instance'],
+            'machine-name': request['machine-name'],
+            'path': request.path
+        };
+
+        const nameResponse: VagrantMachineNameResponse = await require('./name').api(nameRequest);
+
+        response['machine-name'] = nameResponse['machine-name'];
+
+        const proc = await cp.spawn(
+            'vagrant',
+            [
+                'ssh',
+                nameResponse['machine-name']
+            ].concat(
+                request.command ? ['--command', request.command] : []
+            ).concat(
+                request.plain ? ['--plain'] : []
+            ).concat(
+                request.tty ? ['--tty'] : []
+            ).concat(
+                request.color ? ['--color'] : []
+            ).concat(
+                request['machine-name'] ? ['--machine-readable'] : []
+            ),
+            {
+                stdio: 'inherit',
+                cwd: request.path
+            }
+        );
+
+        return response;
+
+    }
+    exports.handler = async function (argv: VagrantMachineDestroyArgv) {
+        await exports.api(argv, {});
     };
-  })();
+})();

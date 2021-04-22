@@ -1,8 +1,4 @@
-interface VagrantMachineDestroyArgv {
-    name: string
-    instance: number
-    path: string
-    "config-env": string
+interface VagrantMachineDestroyArgv extends VagrantMachineArgv {
     force: boolean
 }
 interface VagrantMachineDestroyRequest extends VagrantMachineDestroyArgv {
@@ -19,18 +15,18 @@ interface VagrantMachineDestroyResponse extends VagrantMachineDestroyArgv {
     exports.builder = ((processCwd: string) => {
         const builder = {
             name: {
-                type: "string",
+                type: 'string',
                 required: true
             },
             instance: {
-                type: "number",
+                type: 'number',
                 default: 0,
             },
             path: {
-                type: "string",
+                type: 'string',
                 default: processCwd,
             },
-            "config-env": {
+            'config-env': {
                 type: 'string',
                 default: 'dev'
             }
@@ -41,13 +37,31 @@ interface VagrantMachineDestroyResponse extends VagrantMachineDestroyArgv {
     exports.api = async function (request: VagrantMachineDestroyRequest, response: VagrantMachineDestroyResponse) {
         const cp = require('child_process');
 
-        const nameRequest = request;
-        const nameResponse = await require('./name').api(nameRequest);
+        const nameRequest: VagrantMachineNameRequest = {
+            'config-env': request['config-env'],
+            'machine-name': request['machine-name'],
+            'machine-instance': request['machine-instance'],
+            path: request.path
+        };
 
-        response.name = nameResponse.name;
+        const nameResponse: VagrantMachineNameResponse = await require('./name').api(nameRequest);
 
-        const proc = await cp.spawn("vagrant", ["destroy", nameResponse.name, (request.force ? "--force" : "")], { stdio: "inherit" });
-        
+        response['machine-name'] = nameResponse['machine-name'];
+
+        const proc = await cp.spawn(
+            'vagrant',
+            [
+                'destroy',
+                nameResponse['machine-name'],
+            ].concat(
+                request.force ? ['--force'] : []
+            ),
+            {
+                stdio: 'inherit',
+                cwd: request.path
+            }
+        );
+
         return response;
 
     }

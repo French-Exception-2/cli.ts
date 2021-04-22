@@ -45,21 +45,19 @@ ENV["LC_ALL"] = "en_US.UTF-8"
 
   # Virtual Machines
 
-  if (!vagrant_config['nodes'])
+  if (!vagrant_config['machines'])
     puts vagrant_config
-    throw "Bad configuration file";
+    throw "Bad configuration file : no machines key defined.";
     exit
   end
 
   # Iterate through nodes entry in JSON file
-  vagrant_config['nodes'].each do |servername, server|
+  vagrant_config['machines'].each do |servername, server|
     if (!server['enabled'])
       next
     end
-
-    
-    srv_type_name = server['vagrant-type']
-    srv_type = vagrant_config['nodes-types'][srv_type_name]
+    srv_type_name = server['machine-type-name']
+    srv_type = vagrant_config['machines-types'][srv_type_name]
     server = Vagrant::Util::DeepMerge.deep_merge(srv_type, server)
 
     instances_n = server['instances'].to_i
@@ -73,6 +71,8 @@ ENV["LC_ALL"] = "en_US.UTF-8"
         .gsub("\#{NAME}", servername)
       
       config.vm.define servername_real, primary: (server['primary'] && instance == 0) do |srv|
+        # @todo remove these triggers
+        # @todo config-data-driven triggers
         srv.trigger.after :up, :reload do |trigger|
           trigger.ruby do |env,machine|
             puts "==> #{machine.name}: Updating your ssh config."            
@@ -164,27 +164,27 @@ ENV["LC_ALL"] = "en_US.UTF-8"
           end # each shared folder
         end # if shared folders
   
-        if (server['provisioning'])
+        if (server['provision'])
             
           os_type = server['os_type']
           os_version = server['os_version']
           
-          server['provisioning'].each do |key, value|
+          server['provision'].each do |key, value|
             extension = value['ext'] || 'sh'
             env = value['env'] || {}
             if (value['reload:before'] && true == value['reload:before'])
               srv.vm.provision :reload
             end
             srv.vm.provision "shell", name: key, 
-                                      path: "./provisioning/#{os_type}/#{os_version}/#{key}.#{extension}", 
+                                      path: "./provision/#{os_type}/#{os_version}/#{key}.#{extension}", 
                                       env: env, 
                                       privileged: value['privileged'] || false
   
             if (value['reload:after'] && true == value['reload:after'])
               srv.vm.provision :reload
             end # if reload after
-          end # foreach provisioning
-        end # if provisioning
+          end # foreach provision
+        end # if provision
       end # config.vm.define
     }
   end # servers.each

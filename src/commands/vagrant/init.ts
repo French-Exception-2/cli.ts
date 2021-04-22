@@ -54,15 +54,15 @@ interface VagrantInitArgv {
       const cp = require('child_process');
       const sprintf = require('sprintf-js').sprintf;
     
-      await fs.ensureSymlink(path.join(__dirname, '..', '..', '..', '..', 'provisioning'), path.join(argv.path, 'provisioning'));
+      await fs.ensureSymlink(path.join(__dirname, '..', '..', '..', '..', 'provision'), path.join(argv.path, 'provision'));
     
       try {
         if (argv.copy) {
-          await fs.copy(path.join(__dirname, '..', '..', '..', '..', 'provisioning'), path.join(argv.path, 'provisioning'));
+          await fs.copy(path.join(__dirname, '..', '..', '..', '..', 'provision'), path.join(argv.path, 'provision'));
           await fs.copy(path.join(__dirname, '..', '..', '..', '..', 'resources', 'vagrant_init', 'Vagrantfile'), path.join(argv.path, 'Vagrantfile'));
         } else {
           await fs.ensureSymlink(path.join(__dirname, '..', '..', '..', '..', 'resources', 'vagrant_init', 'Vagrantfile'), path.join(argv.path, 'Vagrantfile'));
-          await fs.ensureSymlink(path.join(__dirname, '..', '..', '..', '..', 'provisioning'), path.join(argv.path, 'provisioning'));
+          await fs.ensureSymlink(path.join(__dirname, '..', '..', '..', '..', 'provision'), path.join(argv.path, 'provision'));
         }
       } catch (e) {
         console.error('You might not be authorized to create a symbolic link. Try with option --copy');

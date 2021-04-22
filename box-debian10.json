@@ -178,32 +178,32 @@
     {
       "type": "shell",
       "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
-      "script": "./provisioning/{{ user `os_type` }}/{{ user `os_version` }}/apt.configure.sh"
+      "script": "./provision/{{ user `os_type` }}/{{ user `os_version` }}/apt.configure.sh"
     },
     {
       "type": "shell",
       "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
-      "script": "./provisioning/{{ user `os_type` }}/{{ user `os_version` }}/apt.update.sh"
+      "script": "./provision/{{ user `os_type` }}/{{ user `os_version` }}/apt.update.sh"
     },
     {
       "type": "shell",
       "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
-      "script": "./provisioning/{{ user `os_type` }}/{{ user `os_version` }}/apt.upgrade.sh"
+      "script": "./provision/{{ user `os_type` }}/{{ user `os_version` }}/apt.upgrade.sh"
     },
     {
       "type": "shell",
       "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
-      "script": "./provisioning/{{ user `os_type` }}/{{ user `os_version` }}/vagrant.sh"
+      "script": "./provision/{{ user `os_type` }}/{{ user `os_version` }}/vagrant.sh"
     },
     {
       "type": "shell",
       "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
-      "script": "./provisioning/{{ user `os_type` }}/{{ user `os_version` }}/virtualbox.guest.additions.install.sh"
+      "script": "./provision/{{ user `os_type` }}/{{ user `os_version` }}/virtualbox.guest.additions.install.sh"
     },
     {
       "type": "shell",
       "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
-      "script": "./provisioning/{{ user `os_type` }}/{{ user `os_version` }}/docker.install.sh",
+      "script": "./provision/{{ user `os_type` }}/{{ user `os_version` }}/docker.install.sh",
       "environment_vars": [
         "docker_ce_cli_version={{user `docker_ce_cli_version`}}",
         "containerd_version={{user `containerd_version`}}",
@@ -213,7 +213,7 @@
     {
       "type": "shell",
       "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
-      "script": "./provisioning/{{ user `os_type` }}/{{ user `os_version` }}/docker.compose.install.sh",
+      "script": "./provision/{{ user `os_type` }}/{{ user `os_version` }}/docker.compose.install.sh",
       "environment_vars": [
         "docker_compose_version={{user `docker_compose_version`}}"
       ]
@@ -221,27 +221,27 @@
     {
       "type": "shell",
       "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
-      "script": "./provisioning/{{ user `os_type` }}/{{ user `os_version` }}/interfaces.configure.sh"
+      "script": "./provision/{{ user `os_type` }}/{{ user `os_version` }}/interfaces.configure.sh"
     },
     {
       "type": "shell",
       "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
-      "script": "./provisioning/{{ user `os_type` }}/{{ user `os_version` }}/sysctl.configure.sh"
+      "script": "./provision/{{ user `os_type` }}/{{ user `os_version` }}/sysctl.configure.sh"
     },
     {
       "type": "shell",
       "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
-      "script": "./provisioning/{{ user `os_type` }}/{{ user `os_version` }}/services.networking.configure.sh"
+      "script": "./provision/{{ user `os_type` }}/{{ user `os_version` }}/services.networking.configure.sh"
     },
     {
       "type": "shell",
       "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
-      "script": "./provisioning/{{ user `os_type` }}/{{ user `os_version` }}/k8s.install.sh"
+      "script": "./provision/{{ user `os_type` }}/{{ user `os_version` }}/k8s.install.sh"
     },
     {
       "type": "shell",
       "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
-      "script": "./provisioning/{{ user `os_type` }}/{{ user `os_version` }}/kernel.update.sh"
+      "script": "./provision/{{ user `os_type` }}/{{ user `os_version` }}/kernel.update.sh"
     }
   ],
   "post-processors": [

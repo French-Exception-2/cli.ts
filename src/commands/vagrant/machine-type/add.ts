@@ -1,108 +1,121 @@
 interface VagrantMachineTypeAddArgv {
-  name: string
+  'machine-type-name': string
   vcpus: number
   cpucap: number
-  "os-type": string
-  "os-version": string
-  "ram-mb": number
-  "vram-mb": number
-  "3d": boolean
+  'os-type': string
+  'os-version': string
+  'ram-mb': number
+  'vram-mb': number
+  '3d': boolean
   logo: string
   pagefusion: boolean
   gui: boolean
   provider: string
   enabled: boolean
   box: string
-  provisioning: Array<string>
+  provision: Array<string>
   path: string
   files: Array<string>
 }
 
+interface VagrantMachineTypeAddRequest extends VagrantMachineTypeAddArgv {
+
+}
+
+interface VagrantMachineTypeAddResponse extends VagrantMachineTypeAddArgv {
+
+}
+
 (() => {
-  exports.command = 'vagrant:machine-type:add';
+  exports.command = 'vagrant:machine-type:add <machine-type-name>';
   exports.desc = 'Add new Vagrant Machine Type';
   exports.builder = ((processCwd) => {
     const builder = {
-      name: {
-        type: "string",
+      'machine-type-name': {
+        type: 'string',
         required: true,
-        description: "Name of Type"
+        description: 'Name of Type'
+      },
+      'parent-name': {
+        type: 'string',
+        required: false,
+        description: 'Name of Parent Type'
       },
       vcpus: {
-        type: "number",
+        type: 'number',
         required: true,
-        description: "Number of VCPUs"
+        description: 'Number of VCPUs'
       },
       cpucap: {
-        type: "number",
+        type: 'number',
         required: true,
-        description: "CPU Cap"
+        description: 'CPU Cap'
       },
-      "os-type": {
-        type: "string",
+      'os-type': {
+        type: 'string',
         required: true,
-        description: "OS Type"
+        description: 'OS Type'
       },
-      "os-version": {
-        type: "string",
+      'os-version': {
+        type: 'string',
         required: true,
-        description: "OS Version"
+        description: 'OS Version'
       },
-      "ram-mb": {
-        type: "number",
+      'ram-mb': {
+        type: 'number',
         required: true,
-        description: "RAM in MB"
+        description: 'RAM in MB'
       },
-      "vram-mb": {
-        type: "number",
+      'vram-mb': {
+        type: 'number',
         required: true,
-        description: "VRAM in MB"
+        description: 'VRAM in MB'
       },
-      "3d": {
-        type: "boolean",
+      '3d': {
+        type: 'boolean',
         required: true,
-        description: "3D"
+        description: '3D'
       },
       logo: {
-        type: "string",
+        type: 'string',
         required: false,
-        description: "Logo image"
+        description: 'Logo image'
       },
       pagefusion: {
-        type: "boolean",
+        type: 'boolean',
         required: false,
-        description: "PageFusion",
+        description: 'PageFusion',
         default: true
       },
       gui: {
-        type: "boolean",
+        type: 'boolean',
         required: true,
         default: false,
-        description: "GUI"
+        description: 'GUI'
       },
       provider: {
-        type: "string",
+        type: 'string',
         required: true,
-        description: "VM Provider"
+        description: 'VM Provider'
       },
       enabled: {
-        type: "boolean",
+        type: 'boolean',
         required: true,
-        description: "Enabled",
+        description: 'Enabled',
         default: true
       },
       box: {
-        type: "string",
+        type: 'string',
         required: true,
-        description: "Box name"
+        description: 'Box name'
       },
-      provisioning: {
-        type: "array",
+      provision: {
+        type: 'array',
         default: [],
-        description: "Provisioning"
+        description: 'provision'
       },
       path: {
-        type: "string",
+        type: 'string',
         default: processCwd
       },
       files: {
@@ -113,36 +126,43 @@ interface VagrantMachineTypeAddArgv {
 
     return builder;
   })(process.cwd());
-  exports.handler = async function (argv: VagrantMachineTypeAddArgv) {
+  exports.api = async function (request: VagrantMachineTypeAddRequest, response: VagrantMachineTypeAddResponse) {
     const path = require('path');
     const fs = require('fs-extra');
     const _json = require('./../../../Serialization.js');
 
     const type = {
-      vcpus: argv.vcpus,
-      cpucap: argv.cpucap,
-      os_type: argv["os-type"],
-      os_version: argv["os-version"],
-      ram_mb: argv["ram-mb"],
-      vram_mb: argv["vram-mb"],
-      "3d": (argv['3d'] ? "on" : "off"),
-      bioslogoimage: argv.logo,
-      pagefusion: argv.pagefusion,
-      gui: argv.gui,
-      provider: argv.provider,
-      enabled: argv.enabled,
-      box: argv.box,
-      provisioning: []
+      vcpus: request.vcpus,
+      cpucap: request.cpucap,
+      os_type: request['os-type'],
+      os_version: request['os-version'],
+      ram_mb: request['ram-mb'],
+      vram_mb: request['vram-mb'],
+      '3d': (request['3d'] ? 'on' : 'off'),
+      bioslogoimage: request.logo,
+      pagefusion: request.pagefusion,
+      gui: request.gui,
+      provider: request.provider,
+      enabled: request.enabled,
+      box: request.box,
+      provision: []
     };
 
-    const json_filepath = path.join(argv.path, 'config.json');
+    const json_filepath = path.join(request.path, 'config.json');
     let json = JSON.parse(await fs.readFile(json_filepath));
 
-    if (!json['$']['nodes-types'])
-      json['$']['nodes-types'] = {};
+    if (!json['$']['machines-types'])
+      json['$']['machines-types'] = {};
 
-    json['$']['nodes-types'][argv.name] = type;
+    json['$']['machines-types'][request['machine-type-name']] = type;
 
     await fs.writeFile(json_filepath, _json.toJson(json));
+
+    console.log('vagrant:machine-type:add ' + request['machine-type-name']);
+
+    return response;
+  };
+  exports.handler = async function (argv: VagrantMachineTypeAddArgv) {
+    await exports.api(argv, {});
   };
 })();

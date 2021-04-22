@@ -1,14 +1,27 @@
-interface VagrantProvisionAddArgv extends VagrantProvisioning {
-    path: string;
+interface VagrantProvisionAddArgv extends VagrantMachineArgv {
     edit: boolean
     provision: VagrantProvisioning
     code: string
+    'provision-name': string
+    'os-type': string
+    'os-version': string
+    'provision-env': Array<string>
+    isBash: boolean
+    isPosh: boolean
+}
+
+interface VagrantProvisionAddRequest extends VagrantProvisionAddArgv {
+
+}
+
+interface VagrantProvisionAddResponse extends VagrantProvisionAddArgv {
+
 }
 
 interface VagrantProvisioning {
     name: string
-    "os-type": string
-    "os-version": string
+    'os-type': string
+    'os-version': string
     env: Array<string>
     isBash: boolean
     isPosh: boolean
@@ -17,16 +30,23 @@ interface VagrantProvisioning {
 (async () => {
     exports.command = 'vagrant:provision:add';
     exports.desc = 'Add new Provisioning';
-    exports.builder = ((process) => {
+    exports.builder = ((processCwd: string) => {
         const builder = {
-            name: {
-                type: "string",
-                required: true,
-                description: "Name of Provision",
+            'machine-name': {
+                type: 'string',
+                describe: 'Machine name to associate with provision'
+            },
+            'machine-instance': {
+                type: 'string',
+                describe: 'Machine instance to associate with provision'
+            },
+            'config-env': {
+                type: 'string',
+                default: 'dev'
             },
             env: {
-                type: "array",
-                description: "ENV Vars as KEY=VALUE",
+                type: 'array',
+                description: 'ENV Vars as KEY=VALUE',
                 default: []
             },
             'os-type': {
@@ -40,8 +60,8 @@ interface VagrantProvisioning {
                 description: null
             },
             path: {
-                type: "string",
-                default: process.cwd(),
+                type: 'string',
+                default: processCwd,
             },
             edit: {
                 type: 'boolean',
@@ -54,19 +74,19 @@ interface VagrantProvisioning {
             'is-posh': {
                 type: 'boolean',
                 default: false,
-                description: "provided --code is PoSh"
+                description: 'provided --code is PoSh'
             },
             'is-bash': {
                 type: 'boolean',
                 default: false,
-                description: "provided --code is bash"
+                description: 'provided --code is bash'
             }
         };
 
         return builder;
-    })(process);
-    exports.handler = async function (argv: VagrantProvisionAddArgv) {
-        console.log('vagrant:provision:add ' + argv.name);
+    })(process.cwd());
+    exports.api = async function (request: VagrantProvisionAddRequest, response: VagrantProvisionAddResponse) {
+        console.log('vagrant:provision:add ' + request["provision-name"]);
         const deepmerge = require('deepmerge');
 
         const path = require('path');
@@ -74,29 +94,29 @@ interface VagrantProvisioning {
         const mkdirp = require('mkdirp');
         const _json = require('./../../../Serialization');
 
-        const json_filepath = path.join(argv.path, 'config.json');
+        const json_filepath = path.join(request.path, 'config.json');
         let json = JSON.parse(await fs.readFile(json_filepath));
 
         const provision: Partial<VagrantProvisioning> = {
-            name: argv.name,
-            env: argv.env,
-            "os-type": argv["os-type"],
-            "os-version": argv["os-version"],
-            isPosh: argv.isPosh,
-            isBash: argv.isBash
+            name: request["provision-name"],
+            env: request["provision-env"],
+            'os-type': request['os-type'],
+            'os-version': request['os-version'],
+            isPosh: request.isPosh,
+            isBash: request.isBash
         }
 
-        if (null == json['$'].provisioning || undefined == json['$'].provisioning || !Array.isArray(json['$'].provisioning)) {
-            json['$'].provisioning = [];
+        if (null == json['$'].provision || undefined == json['$'].provision || !Array.isArray(json['$'].provision)) {
+            json['$'].provision = [];
         }
 
-        json['$'].provisioning.push(provision);
+        json['$'].provision.push(provision);
 
         await fs.writeFile(json_filepath, _json.toJson(json));
 
-        if (argv.code && provision["os-type"] && provision["os-version"]) {
-            const code = (!provision.isBash ? "#!/usr/bin/env bash" : "#!/usr/bin/env pwsh") + "\r\n" + "\r\n" + argv.code + "\r\n";
-            const filepath = path.join(argv.path, 'provisioning', provision["os-type"], provision["os-version"]);
+        if (request.code && provision['os-type'] && provision['os-version']) {
+            const code = (!provision.isBash ? '#!/usr/bin/env bash' : '#!/usr/bin/env pwsh') + '\r\n' + '\r\n' + request.code + '\r\n';
+            const filepath = path.join(request.path, 'provision', provision['os-type'], provision['os-version']);
 
             if (!fs.access(filepath)) {
                 await fs.mkdir(filepath, { recursive: true });
@@ -107,9 +127,12 @@ interface VagrantProvisioning {
             await fs.writeFile(fullpath, code);
         }
 
-        if (argv.edit) {
+        if (request.edit) {
             const cp = require('child_process');
             await cp.exec('code . -n');
         }
+    };
+    exports.handler = async function (argv: VagrantProvisionAddArgv) {
+        await exports.api(argv, {});
     };
 })();

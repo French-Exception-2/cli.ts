@@ -1,7 +1,13 @@
-interface VagrantMachineStatusArgv {
-    name: string
-    instance: number
-    path: string
+interface VagrantMachineStatusArgv extends VagrantMachineArgv {
+
+}
+
+interface VagrantMachineStatusRequest extends VagrantMachineStatusArgv {
+
+}
+
+interface VagrantMachineStatusResponse extends VagrantMachineStatusArgv {
+    status: string
 }
 
 (async () => {
@@ -18,35 +24,38 @@ interface VagrantMachineStatusArgv {
             path: {
                 type: 'string',
                 default: processCwd
+            },
+            'config-env': {
+                type: 'string',
+                default: 'dev'
             }
         };
 
         return builder;
     })(process.cwd());
-    exports.handler = async function (argv: VagrantMachineStatusArgv) {
-        const path = require('path');
-        const fs = require('fs-extra');
-        const _json = require('./../../../Serialization');
-        const deepmerge = require('deepmerge');
-        const sprintf = require('sprintf-js').sprintf;
+    exports.api = async function (request: VagrantMachineStatusRequest, response: VagrantMachineStatusResponse) {
         const cp = require('child_process');
 
-        const json_filepath = path.join(argv.path, 'config.json');
-        let json = JSON.parse(await fs.readFile(json_filepath));
+        const nameRequest = request;
+        const nameResponse: VagrantMachineNameResponse = await require('./name').api(nameRequest);
 
-        const json_local_filepath = path.join(argv.path, 'config-local.json');
-        let json_local = JSON.parse(await fs.readFile(json_local_filepath));
+        response['machine-name'] = nameResponse['machine-name'];
 
-        const merged = deepmerge(json, json_local);
+        const proc = await cp.spawn(
+            'vagrant',
+            [
+                'status',
+                nameResponse['machine-name']
+            ],
+            {
+                stdio: 'inherit',
+                cwd: request.path
+            }
+        );
 
-        const vagrant_instance_str = sprintf('%02d', merged.vagrant.instance);
-        const vagrant_machine_instance_str = sprintf('%02d', argv.instance);
-        const vagrant_machine_str = merged.nodes[argv.name].hostname_pattern
-            .replace(/\#\{VAGRANT_INSTANCE\}/, vagrant_instance_str)
-            .replace(/\#\{NAME\}/, argv.name)
-            .replace(/\#\{INSTANCE\}/, vagrant_machine_instance_str)
-
-        await cp.spawn("vagrant", ['status', vagrant_machine_str], { stdio: 'inherit' });
-
+        return response;
+    };
+    exports.handler = async function (argv: VagrantMachineStatusArgv) {
+        await exports.api(argv, {});
     };
 })();
