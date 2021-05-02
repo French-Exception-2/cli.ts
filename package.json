@@ -8,7 +8,7 @@
     "build": "npx tsc --build",
     "watch": "npx ts-node ./dev/watch.ts",
     "test": "npx mocha --config .mocharc.json",
-    "test:watch": "npx nodemon --exec 'npm run test' --ext ts --watch src",
+    "test:watch": "npx nodemon --exec 'npm run test' --ext ts --watch src --watch test",
     "dev:init": "nodemon --watch ./bin/init.ps1 --exec 'pwsh ./bin/Init.ps1'"
   },
   "bin": {
@@ -24,6 +24,7 @@
     "name": "Stéphane Erard",
     "email": "stephane.erard.se@gmail.com"
   },
+  "type": "module",
   "license": "Educational, non-profit use",
   "dependencies": {
     "@frenchex/config-api": "^0.3.2",
