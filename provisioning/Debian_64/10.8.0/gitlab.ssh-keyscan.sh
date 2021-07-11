@@ -1,2 +1,0 @@
-
-ssh-keyscan gitlab.com

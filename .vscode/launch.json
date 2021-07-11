@@ -5,14 +5,21 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "PowerShell bin/Init",
+            "type": "PowerShell",
+            "request": "launch",
+            "script": "${workspaceFolder}/bin/Init.ps1",
+            "cwd": "${workspaceFolder}/tmp"
+        },
+        {
             "name": "Python : Docker Compose PS",
             "type": "python",
             "request": "launch",
-            "program": "C:\\Python39\\Scripts\\docker-compose-script.py",
+            "program": "C:/Python39/Scripts/docker-compose-script.py",
             "console": "integratedTerminal",
-            "args": ["ps"],
+            "args": ["--context", "c0", "ps"],
             "cwd": "${workspaceFolder}/tmp",
-            "env": {"COMPOSE_PARAMIKO_SSH":"1"}
+            "env": {"COMPOSE_PARAMIKO_SSH":"0"}
         },
         {
             "name": "Python: Attacher",
@@ -190,8 +197,9 @@
             "type": "pwa-node",
             "args": [
                 "vagrant:machine:up",
-                "--name",
-                "infra",
+                "dev",
+                "--machine-instance",
+                "0"
             ]
         },
         {
@@ -223,8 +231,50 @@
             "args": [
                 "config:get",
                 "--key",
-                "nodes-types"
+                "machines-types"
             ]
-        }
+        },
+        {
+            "name": "config:dump test",
+            "program": "${workspaceFolder}/bin/frenchex2",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "cwd": "${workspaceFolder}/tmp",
+            "type": "pwa-node",
+            "args": [
+                "config:dump"
+            ]
+        },
+        {
+            "name": "vagrant:machine:name dev",
+            "program": "${workspaceFolder}/bin/frenchex2",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "cwd": "${workspaceFolder}/tmp",
+            "type": "pwa-node",
+            "args": [
+                "vagrant:machine:name",
+                "--name",
+                "'dev'"
+            ]
+        },
+        {
+            "name": "vagrant:machine:provision dev",
+            "program": "${workspaceFolder}/bin/frenchex2",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "cwd": "${workspaceFolder}/tmp",
+            "type": "pwa-node",
+            "args": [
+                "vagrant:machine:provision",
+                "'dev'"
+            ]
+        },
     ]
 }

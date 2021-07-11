@@ -173,12 +173,12 @@
   "provisioners": [
     {
       "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
-      "script": "provisioning/{{user `os_type`}}/{{user `os_version`}}/vagrant.sh",
+      "script": "provision/{{user `os_type`}}/{{user `os_version`}}/vagrant.sh",
       "type": "shell"
     },
     {
       "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
-      "script": "provisioning/{{user `os_type`}}/{{user `os_version`}}/kernel.update.sh",
+      "script": "provision/{{user `os_type`}}/{{user `os_version`}}/kernel.update.sh",
       "type": "shell",
       "environment_vars":[
         "kernel_version={{user `kernel_version` }}"
@@ -186,17 +186,17 @@
     },
     {
       "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
-      "script": "provisioning/{{user `os_type`}}/{{user `os_version`}}/virtualbox.guest.additions.install.sh",
+      "script": "provision/{{user `os_type`}}/{{user `os_version`}}/virtualbox.guest.additions.install.sh",
       "type": "shell"
     },
     {
       "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
-      "script": "provisioning/{{user `os_type`}}/{{user `os_version`}}/ipv6.disable.sh",
+      "script": "provision/{{user `os_type`}}/{{user `os_version`}}/ipv6.disable.sh",
       "type": "shell"
     },
     {
       "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
-      "script": "provisioning/{{user `os_type`}}/{{user `os_version`}}/apt.configure.sh",
+      "script": "provision/{{user `os_type`}}/{{user `os_version`}}/apt.configure.sh",
       "type": "shell",
       "environment_vars":[
         "keyboard_layout={{user `keyboard_layout`}}"
@@ -204,12 +204,12 @@
     },
     {
       "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
-      "script": "provisioning/{{user `os_type`}}/{{user `os_version`}}/apt.configure.sh",
+      "script": "provision/{{user `os_type`}}/{{user `os_version`}}/apt.configure.sh",
       "type": "shell"
     },
     {
       "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
-      "script": "provisioning/{{user `os_type`}}/{{user `os_version`}}/apt.proxy.configure.sh",
+      "script": "provision/{{user `os_type`}}/{{user `os_version`}}/apt.proxy.configure.sh",
       "type": "shell",
       "environment_vars": [
         "APT_IP=10.100.2.20"
@@ -217,17 +217,17 @@
     },
     {
       "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
-      "script": "provisioning/{{user `os_type`}}/{{user `os_version`}}/docker.install.sh",
+      "script": "provision/{{user `os_type`}}/{{user `os_version`}}/docker.install.sh",
       "type": "shell"
     },
     {
       "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
-      "script": "provisioning/{{user `os_type`}}/{{user `os_version`}}/k8s.install.sh",
+      "script": "provision/{{user `os_type`}}/{{user `os_version`}}/k8s.install.sh",
       "type": "shell"
     },
     {
       "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash '{{.Path}}'",
-      "script": "provisioning/{{user `os_type`}}/{{user `os_version`}}/cleanup.sh",
+      "script": "provision/{{user `os_type`}}/{{user `os_version`}}/cleanup.sh",
       "type": "shell"
     }
   ],

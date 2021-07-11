@@ -8,3 +8,4 @@ coverage
 builds
 output-virtualbox-iso/
 packer_cache/
+config-local.json

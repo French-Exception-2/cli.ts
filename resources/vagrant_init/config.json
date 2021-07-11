@@ -1,6 +1,8 @@
 {
-    "vagrant": {},
-    "nodes-types": {},
-    "nodes": {},
-    "packer": {}
+    "imports": [
+        "./config-local.json"
+    ],
+    "$": {
+        
+    }
 }

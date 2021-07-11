@@ -1,0 +1,394 @@
+{
+    "imports": [
+        "./config-local.json"
+    ],
+    "$": {
+        "machines-types": {
+            "dev": {
+                "vcpus": 4,
+                "cpucap": 100,
+                "os_type": "Debian_64",
+                "os_version": "10.9.0",
+                "ram_mb": 2048,
+                "vram_mb": 8,
+                "3d": "off",
+                "pagefusion": true,
+                "gui": false,
+                "provider": "virtualbox",
+                "enabled": true,
+                "box": "debian/contrib-buster64",
+                "provisioning": []
+            }
+        },
+        "provisioning": [
+            {
+                "name": "apt-cacherng.install",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "apt.configure",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "apt.dist-upgrade",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "apt.proxy.configure",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "apt.proxy.unconfigure",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "apt.update",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "apt.upgrade",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "infos",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "clean1",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "clean2",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "dns.resolver.configure",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "docker-cli.configure",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "docker-cli.install",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "docker-compose.install",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "docker.configure",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "docker.contexts.remove.all",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "docker-host.configure",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "docker.install",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "gitlab-cli.install",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "gitlab-cli.token.register",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "gitlab.ssh.keyscan",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "helm.install",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "homebrew.install",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "interfaces.configure",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "ipv6.disable",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "jq.install",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "k8s.configure",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "k8s.install",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "kernel.update",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "keyboard.layout.configure",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "mysql.install",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "nvm.install",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "php.composer.install",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "php.install",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "php.xdebug.disable",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "php.xdebug.enable",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "phpbrew.install",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "powershell-core.install",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "python.pip.install",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "services.networking.configure",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "ssh.keys.configure",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "sysctl.configure",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "unzip",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "vagrant",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "virtualbox.guest.additions.install",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            },
+            {
+                "name": "yq.install",
+                "env": [],
+                "os-type": "Debian_64",
+                "os-version": "10.9.0",
+                "isPosh": false,
+                "isBash": true
+            }
+        ]
+    }
+}

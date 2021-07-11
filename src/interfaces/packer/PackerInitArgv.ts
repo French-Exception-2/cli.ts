@@ -1,3 +1,0 @@
-interface PackerInitArgv {
-    path: string
-}

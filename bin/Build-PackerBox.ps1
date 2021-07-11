@@ -24,7 +24,7 @@ packer build  --force                       `
     --var "cpus=$Cpus"                      `
     --var "ram=$ram_mb"                     `
     --var "SHA512Checksum=$SHA512Checksum"  `
-    ".\$BoxTemplate.json"
+    "$BoxTemplate.json"
 
 # Win 10 Pro
 # builds/{{.Provider}}-win10-{{ user `os_version` }}-{{ user `box_type` }}-{{ user `disk_size_hr` }}.box
